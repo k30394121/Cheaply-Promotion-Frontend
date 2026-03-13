@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Leaderboard - Cheap Tycoon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+        
+        #leaderboardContent { 
+            height: calc(100vh - 120px); 
+            overflow-y: auto; 
+            overflow-x: hidden; 
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 flex flex-col h-screen">
+    
+    <header class="bg-purple-900/50 backdrop-blur-sm border-b border-purple-600/50 shrink-0">
+        <div class="container mx-auto px-3 md:px-4 py-3 md:py-4">
+            <div class="flex items-center gap-2 md:gap-4">
+                <button onclick="history.back()" class="p-1 md:p-2 text-white hover:text-purple-200 transition-colors no-tap-highlight">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </button>
+                <div class="flex items-center gap-1.5 md:gap-2">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                    <h1 class="text-lg md:text-2xl font-bold text-white tracking-tight">Global Leaderboard</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-purple-800/30 border-b border-purple-600/50 shrink-0">
+        <div class="container mx-auto px-4">
+            <div class="flex gap-4">
+                <button class="px-4 md:px-6 py-2 md:py-3 text-white text-sm md:text-base font-semibold border-b-2 border-yellow-400 no-tap-highlight">
+                    Global Rankings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main id="leaderboardContent" class="flex-1 relative">
+        <div class="container mx-auto px-3 md:px-4 pt-4 pb-28 max-w-4xl">
+            
+            <div id="loading" class="text-center py-12">
+                <div class="inline-block w-10 h-10 md:w-12 md:h-12 border-4 border-purple-400 border-t-yellow-400 rounded-full animate-spin mb-4"></div>
+                <p class="text-purple-300 text-sm md:text-base">Loading rankings...</p>
+            </div>
+
+            <div id="playersList" class="space-y-2 md:space-y-3 hidden"></div>
+
+            <div id="loadMore" class="text-center py-8 hidden">
+                <div class="inline-block w-6 h-6 md:w-8 md:h-8 border-4 border-purple-400 border-t-yellow-400 rounded-full animate-spin mb-2"></div>
+                <p class="text-purple-300 text-xs md:text-sm">Loading more players...</p>
+            </div>
+            
+            <div id="endMessage" class="text-center py-8 hidden">
+                <p class="text-purple-300 text-xs md:text-sm">You've reached the end of the leaderboard</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FIX 1 & 2: 改為 absolute（原本就是 absolute），並對底部所有欄位補上 id，讓 JS 用 getElementById 精確選取 -->
+    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-purple-800 via-purple-900 to-pink-800 border-t-2 md:border-t-4 border-yellow-400 shadow-[0_-10px_20px_rgba(0,0,0,0.5)] z-50 backdrop-blur-md">
+        <div class="container mx-auto px-2 md:px-4 py-2 md:py-4 max-w-4xl">
+            <div class="flex items-center gap-2 md:gap-4 bg-purple-900/50 rounded-xl p-2 md:p-3 border md:border-2 border-purple-600/50">
+                
+                <!-- FIX 2: 補上 id="myRankBadge" -->
+                <div id="myRankBadge" class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full px-2.5 md:px-4 py-1.5 md:py-2 shrink-0 shadow-lg border border-yellow-400">
+                    <span class="text-white font-bold text-sm md:text-lg drop-shadow-md">#--</span>
+                </div>
+                
+                <!-- FIX 2: 補上 id="myAvatar" -->
+                <div id="myAvatar" class="w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-sm md:text-xl font-bold text-white shrink-0 border md:border-2 border-purple-400 shadow-lg">?</div>
+                
+                <div class="flex-1 min-w-0">
+                    <!-- FIX 2: 補上 id="myName" -->
+                    <div id="myName" class="text-white font-semibold text-sm md:text-lg drop-shadow-md leading-tight">You</div>
+                    <!-- FIX 2: 補上 id="myWallet" -->
+                    <div id="myWallet" class="text-purple-200 text-[10px] md:text-sm truncate font-mono">Connecting...</div>
+                </div>
+                
+                <div class="text-right shrink-0 bg-purple-800/50 rounded-lg px-2 md:px-4 py-1 md:py-2 border border-purple-600/50">
+                    <!-- FIX 2: 補上 id="myTokens" -->
+                    <div id="myTokens" class="text-yellow-300 font-bold text-sm md:text-xl drop-shadow-lg leading-tight">0</div>
+                    <div class="text-purple-200 text-[8px] md:text-sm font-medium uppercase tracking-wider">tokens</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="js/leaderboard.js"></script>
+</body>
+</html>

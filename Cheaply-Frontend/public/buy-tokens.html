@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buy Tokens - Cheap Tycoon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+
+    <style>
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+        .animate-twinkle { animation: twinkle 2s infinite; }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        /* Mobile Touch Fixes */
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+        button:active { transform: scale(0.96); }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen text-white font-sans overflow-x-hidden">
+    
+    <header class="bg-purple-900/50 backdrop-blur-md border-b border-purple-600/50 sticky top-0 z-40">
+        <div class="container mx-auto px-3 md:px-4 py-3 md:py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 md:gap-4">
+                <button onclick="history.back()" class="p-1.5 md:p-2 rounded-full hover:bg-white/10 transition-colors no-tap-highlight">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </button>
+                <h1 class="text-lg md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">Buy Token</h1>
+            </div>
+
+            <div class="flex items-center">
+                <button id="connectBtn" onclick="connectWallet()" class="flex items-center gap-1.5 md:gap-2 px-3 md:px-6 py-1.5 md:py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-full text-xs md:text-base font-bold transition-all shadow-lg hover:shadow-purple-500/30 no-tap-highlight">
+                    <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-red-400 animate-pulse"></span>
+                    <span class="hidden sm:inline">Connect Phantom</span>
+                    <span class="sm:hidden">Connect</span>
+                </button>
+
+                <div id="walletDisplay" class="hidden items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gray-800/80 border border-green-500/30 rounded-full">
+                    <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] shrink-0"></span>
+                    <span id="walletAddress" class="text-green-400 font-mono font-bold text-[10px] md:text-sm truncate max-w-[80px] md:max-w-none"></span>
+                    <button onclick="disconnectWallet()" class="ml-1 md:ml-2 text-[9px] md:text-xs text-gray-500 hover:text-white transition-colors no-tap-highlight">(Disconnect)</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-3 md:px-4 py-6 md:py-8 max-w-5xl">
+        
+        <div class="bg-yellow-600/20 border-2 border-yellow-400/50 rounded-xl p-4 md:p-6 mb-6 md:mb-8 backdrop-blur-sm shadow-lg shadow-yellow-900/20">
+            <div class="flex items-start gap-2 md:gap-3">
+                <svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-400 flex-shrink-0 mt-0.5 md:mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                    <h3 class="text-yellow-200 font-bold text-base md:text-lg mb-1 md:mb-2">Important Notice</h3>
+                    <ul class="text-yellow-100 space-y-1 list-none text-xs md:text-base">
+                        <li>• Game tokens (Web2) are for in-game use only</li>
+                        <li>• Promo tokens (Web3) are blockchain-based rewards</li>
+                        <li>• 1 Game Token = 0.000025 USDC</li>
+                        <li>• Buy 1 Game Token → Get 0.0001 Promo Token FREE</li>
+                        <li>• Max 5,000 Promo Tokens per user (Limited to 45M total supply)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-purple-900/80 to-indigo-900/80 backdrop-blur-md rounded-2xl p-5 md:p-6 mb-8 md:mb-10 border border-purple-500/50 shadow-2xl relative overflow-hidden group">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 md:w-24 md:h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-all"></div>
+            
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 relative z-10 text-center md:text-left">
+                <div class="flex flex-col md:flex-row items-center gap-3 md:gap-4">
+                    <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 border border-blue-500/30 shrink-0">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-blue-200 text-xs md:text-sm uppercase tracking-wider font-semibold">Your USDC Balance</p>
+                        <p class="text-2xl md:text-3xl font-bold font-mono" id="usdcBalanceDisplay">--</p> 
+                    </div>
+                </div>
+                <div class="h-px w-full md:h-12 md:w-px bg-white/10 my-2 md:my-0"></div>
+                <div class="text-center md:text-right">
+                    <p class="text-purple-200 text-xs md:text-sm uppercase tracking-wider font-semibold">Current Game Tokens</p>
+                    <p class="text-yellow-400 text-xl md:text-2xl font-bold font-mono" id="serverGameTokens">Loading...</p>
+                    <p class="text-blue-300 text-[10px] md:text-xs font-mono mt-0.5 md:mt-1">Promo: <span id="serverPromoTokens">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto mb-12 md:mb-16">
+            
+            <div class="group relative bg-slate-800/50 rounded-2xl p-5 md:p-6 border border-purple-500/30 hover:border-purple-400 hover:bg-slate-800/80 transition-all duration-300 md:hover:-translate-y-1">
+                <div class="text-center mb-5 md:mb-6 pt-2 md:pt-4">
+                    <div class="text-3xl md:text-4xl font-bold text-white mb-1">4M</div>
+                    <div class="text-xs md:text-sm text-gray-400">Game Tokens</div>
+                    <div class="text-xl md:text-2xl font-bold text-white mt-3 md:mt-4">$100 <span class="text-xs md:text-sm font-normal text-gray-400">USDC</span></div>
+                </div>
+                <div class="bg-purple-900/40 rounded-lg p-2 md:p-3 mb-5 md:mb-6 text-center border border-purple-500/20">
+                    <p class="text-purple-200 text-xs md:text-sm font-semibold">+ 400 Promo Tokens</p>
+                </div>
+                <button onclick="askConfirmation(1, 4000000, 100, 400)" class="w-full py-3 rounded-xl font-bold text-sm md:text-base bg-white/10 text-white hover:bg-white/20 transition-all border border-white/10 no-tap-highlight">Purchase</button>
+            </div>
+
+            <div class="group relative bg-gradient-to-b from-orange-900/80 to-slate-900/90 rounded-2xl p-5 md:p-6 border-2 border-orange-500/50 hover:border-orange-400 hover:shadow-[0_0_30px_rgba(234,88,12,0.2)] transition-all duration-300 md:hover:-translate-y-2 md:scale-105 z-10 mt-4 sm:mt-0">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-purple-900 px-3 md:px-4 py-0.5 md:py-1 rounded-full text-xs md:text-sm font-bold shadow-lg uppercase tracking-wide whitespace-nowrap">🔥 Hot Sale</div>
+                <div class="text-center mb-5 md:mb-6 pt-2 md:pt-4">
+                    <div class="text-4xl md:text-5xl font-bold text-white mb-1">20M</div>
+                    <div class="text-xs md:text-sm text-orange-200/70">Game Tokens</div>
+                    <div class="text-2xl md:text-3xl font-bold text-white mt-3 md:mt-4">$500 <span class="text-xs md:text-sm font-normal text-gray-400">USDC</span></div>
+                </div>
+                <div class="bg-orange-900/30 rounded-lg p-2 md:p-3 mb-5 md:mb-6 text-center border border-orange-500/30">
+                    <p class="text-orange-200 text-xs md:text-sm font-bold">+ 2,000 Promo Tokens</p>
+                </div>
+                <button onclick="askConfirmation(2, 20000000, 500, 2000)" class="w-full py-3 rounded-xl font-bold text-sm md:text-base bg-gradient-to-r from-orange-500 to-red-600 text-white hover:shadow-lg hover:brightness-110 transition-all no-tap-highlight">Purchase Now</button>
+            </div>
+
+            <div class="group relative bg-gradient-to-br from-yellow-500 via-amber-500 to-orange-500 rounded-2xl p-5 md:p-6 border-4 border-yellow-300 shadow-2xl shadow-yellow-400/60 hover:shadow-yellow-300/80 transition-all duration-300 md:hover:-translate-y-1 md:hover:scale-105 sm:col-span-2 md:col-span-1 mt-4 md:mt-0">
+                <div class="absolute -top-3.5 md:-top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-300 to-yellow-400 text-purple-900 px-4 md:px-6 py-1 md:py-2 rounded-full text-xs md:text-base font-black shadow-xl animate-pulse whitespace-nowrap z-20">💎 MAX VALUE</div>
+                <div class="absolute top-4 right-4 text-xl md:text-2xl animate-twinkle text-yellow-300 z-30">✨</div>
+                <div class="absolute bottom-4 left-4 text-xl md:text-2xl animate-twinkle text-yellow-300 z-30" style="animation-delay: 0.5s">✨</div>
+                
+                <div class="text-center mb-5 md:mb-6 pt-4 md:pt-6">
+                    <div class="text-5xl md:text-6xl font-black text-white mb-1 drop-shadow-lg">50M</div>
+                    <div class="text-xs md:text-sm text-yellow-50 font-bold">Game Tokens</div>
+                    <div class="text-3xl md:text-4xl font-black text-white mt-3 md:mt-4">$1,250 <span class="text-xs md:text-sm font-normal text-yellow-50">USDC</span></div>
+                </div>
+                <div class="bg-yellow-900/40 rounded-lg p-2 md:p-3 mb-5 md:mb-6 text-center border-2 border-yellow-500/50">
+                    <p class="text-yellow-50 text-xs md:text-sm font-bold">+ 5,000 Promo Tokens FREE</p>
+                </div>
+                <button onclick="askConfirmation(3, 50000000, 1250, 5000)" class="w-full py-3.5 md:py-4 rounded-xl font-black text-base md:text-lg bg-gradient-to-r from-purple-600 to-purple-800 text-white hover:from-purple-500 hover:to-purple-700 hover:scale-105 shadow-2xl shadow-purple-600/50 transition-all no-tap-highlight">GET BEST DEAL</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/60 backdrop-blur-md rounded-2xl p-5 md:p-8 border border-slate-700/50">
+            <h2 class="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2"><span>🎨</span> Custom Package</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-slate-400 text-xs md:text-sm font-semibold">💵 Spend (USDC)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-slate-500">$</span>
+                        <input type="number" id="customUSDC" placeholder="0.00" oninput="calc('usdc')" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 md:px-4 py-2.5 md:py-3 pl-7 md:pl-8 text-sm md:text-base text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all no-tap-highlight">
+                    </div>
+                </div>
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-slate-400 text-xs md:text-sm font-semibold">🎮 Get Game Tokens</label>
+                    <input type="number" id="customGameTokens" placeholder="0" readonly class="w-full bg-slate-800/50 border border-slate-600 rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base text-slate-300 outline-none cursor-not-allowed">
+                </div>
+                <div class="space-y-1.5 md:space-y-2">
+                    <label class="text-blue-300 text-xs md:text-sm font-semibold">🎁 Promo Tokens (FREE)</label>
+                    <input type="number" id="customPromoTokens" placeholder="0" disabled class="w-full bg-blue-900/20 border border-blue-500/30 rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base text-blue-300 cursor-not-allowed">
+                </div>
+            </div>
+            <button id="customBtn" disabled onclick="purchaseCustom()" class="w-full mt-6 md:mt-8 py-3.5 md:py-4 rounded-xl font-bold text-base md:text-lg transition-all duration-300 bg-slate-700 text-slate-500 cursor-not-allowed no-tap-highlight">Enter Amount to Purchase</button>
+        </div>
+
+        <div class="mt-8 md:mt-12 text-center border-t border-purple-800/50 pt-6 md:pt-8 pb-4">
+            <p class="text-purple-300 text-xs md:text-sm leading-relaxed px-4">
+                Having issues? Make sure your wallet is connected and you have enough USDC.<br>
+                <span class="text-purple-400 font-semibold block mt-1">Promo token supply is limited to 45 million tokens globally.</span>
+            </p>
+        </div>
+    </main>
+
+    <!-- FIX 1: overlay 移除初始 class 裡的 flex，改由 JS 動態加上，避免 hidden + flex 並存的不穩定寫法 -->
+    <div id="overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center">
+        <div class="text-center p-4">
+            <div class="w-12 h-12 md:w-16 md:h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h3 class="text-lg md:text-xl font-bold text-white" id="overlayText">Processing Transaction...</h3>
+            <p class="text-slate-400 mt-2 text-sm">Please approve in your wallet</p>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="fixed top-16 right-0 md:top-24 md:right-5 z-[90] transform translate-x-full transition-transform duration-300 pointer-events-none w-full md:w-auto p-2 md:p-0">
+        <div class="bg-gray-900/95 backdrop-blur border-l-4 border-purple-500 text-white px-4 md:px-6 py-3 md:py-4 rounded-lg shadow-2xl flex items-center gap-3 md:gap-4 w-full md:min-w-[300px]">
+            <div id="toast-icon" class="text-xl md:text-2xl shrink-0">🔔</div>
+            <div class="min-w-0 flex-1">
+                <h4 id="toast-title" class="font-bold text-xs md:text-sm text-purple-400">Notification</h4>
+                <p id="toast-message" class="text-[10px] md:text-xs text-gray-300 truncate">Message content...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX 1: confirmModal 同樣移除初始 flex，由 JS 控制 -->
+    <!-- FIX 2: confirmBtn 初始 class 加上 opacity-50 cursor-not-allowed（disabled 狀態），讓 JS 的 remove/add 有意義 -->
+    <!-- FIX 4: confirmContent 保留 scale-90 opacity-0 作為初始狀態，確保每次開場動畫都正確 -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[80] hidden items-center justify-center p-4">
+        <div id="confirmContent" class="bg-slate-900 border border-slate-600 rounded-2xl md:rounded-3xl p-6 md:p-8 max-w-[95%] sm:max-w-sm w-full relative shadow-2xl transform scale-90 opacity-0 transition-all duration-300 ease-out">
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 flex items-center gap-2"><span>🛒</span> Review Order</h3>
+            
+            <div class="bg-slate-800/50 rounded-xl p-3 md:p-4 mb-4 md:mb-6 space-y-3 md:space-y-4 text-sm md:text-base">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2 md:pb-3">
+                    <span class="text-slate-400">Total Cost</span>
+                    <span class="text-white font-bold text-lg md:text-xl" id="confirmCost">$0.00</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-400">Game Tokens</span>
+                    <span class="text-white font-bold" id="confirmGame">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-slate-400">Promo Bonus</span>
+                    <span class="text-blue-300 font-bold" id="confirmPromo">0</span>
+                </div>
+            </div>
+            
+            <div id="fundsWarning" class="hidden mb-4 p-2 bg-red-500/20 border border-red-500 rounded text-red-300 text-xs text-center">Insufficient USDC Balance!</div>
+            
+            <div class="flex items-start mt-2 md:mt-4 mb-4 md:mb-6">
+                <input type="checkbox" id="tosCheckbox" class="mt-1 w-4 h-4 text-purple-600 bg-slate-800 border-slate-600 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer flex-shrink-0">
+                <label for="tosCheckbox" class="ml-2 text-[10px] md:text-sm text-slate-300 cursor-pointer leading-tight">
+                    I agree that there will be a giftaway web3 tokens along with the web2 tokens. I have read the whole content of the
+                    <a href="chmetokenwhitepaper.pdf" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline font-bold" onclick="event.stopPropagation()">
+                        Whitepaper
+                    </a>
+                </label>
+            </div>
+            
+            <div class="flex gap-2 md:gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-2.5 md:py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl text-sm md:text-base font-bold no-tap-highlight">Cancel</button>
+                <!-- FIX 2: 初始加上 opacity-50 cursor-not-allowed bg-slate-600，讓 disabled 狀態有正確視覺 -->
+                <button id="confirmBtn" onclick="confirmPurchase()" disabled
+                    class="flex-1 py-2.5 md:py-3 bg-slate-600 text-slate-400 rounded-xl text-sm md:text-base font-bold transition-all shadow-lg opacity-50 cursor-not-allowed no-tap-highlight">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/buy-tokens.js"></script>
+</body>
+</html>

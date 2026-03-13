@@ -1,0 +1,128 @@
+\<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cheap Tycoon - Spin to Win</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Consolidated all CSS here for better load performance (no FOUC) */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #fbbf24;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Mobile Touch Fixes */
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+
+        /* FIXED: Removed overflow: hidden so small phones can scroll down to buttons */
+        body {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen font-sans relative">
+    
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute w-64 h-64 md:w-96 md:h-96 bg-pink-500 rounded-full blur-[80px] md:blur-3xl opacity-20 -top-24 -left-24 md:-top-48 md:-left-48 animate-pulse"></div>
+        <div class="absolute w-64 h-64 md:w-96 md:h-96 bg-purple-500 rounded-full blur-[80px] md:blur-3xl opacity-20 -bottom-24 -right-24 md:-bottom-48 md:-right-48 animate-pulse"></div>
+        <div id="particles" class="absolute inset-0"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-[100dvh] px-4 py-12 md:py-8 pb-20">
+        
+        <button onclick="window.location.href='/'" class="absolute top-4 left-4 md:top-6 md:left-6 p-2 md:p-2.5 bg-white/5 border border-white/10 rounded-full text-white hover:bg-white/10 hover:text-purple-200 transition-all no-tap-highlight z-50 opacity-0" style="animation: fadeIn 0.5s forwards">
+            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+        </button>
+
+        <div class="mb-4 md:mb-8 text-center opacity-0" style="animation: fadeIn 1s forwards">
+            <a href="/" class="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 mb-2 md:mb-4 group no-tap-highlight hover:opacity-80 transition-opacity">
+                <svg class="w-12 h-12 md:w-20 md:h-20 text-yellow-400 mb-1 md:mb-0 transform group-hover:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                
+                <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight tracking-tight text-center">
+                    Cheap
+                    <br class="md:hidden" />
+                    Tycoon
+                </h1>
+            </a>
+        </div>
+
+        <p class="text-xl md:text-3xl text-pink-200 mb-8 md:mb-10 text-center font-light opacity-0 tracking-wide" style="animation: fadeIn 1s 0.2s forwards">
+            Spin to Win the Tokens
+        </p>
+
+        <div class="mb-10 md:mb-12 opacity-0 transform scale-100" style="animation: fadeIn 1s 0.4s forwards">
+            <div class="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-2xl animate-float p-3 md:p-4 shrink-0">
+                <div class="absolute inset-0 bg-white rounded-full opacity-10 animate-ping"></div>
+                <img src="cheaply_coin.png" 
+                    alt="Cheap Tycoon Wheel" 
+                    class="w-full h-full object-contain drop-shadow-2xl relative z-10">
+            </div>
+        </div>
+        
+        <div class="mb-5 md:mb-6 opacity-0 w-full max-w-[280px] md:max-w-none text-center" style="animation: fadeIn 1s 0.6s forwards">
+            <button onclick="window.location.href='log_or_sign.html'" 
+                    class="w-full md:w-auto px-8 md:px-12 py-4 md:py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-900 text-lg md:text-xl font-bold rounded-full shadow-2xl hover:shadow-yellow-400/50 transition-all duration-300 transform active:scale-95 no-tap-highlight">
+                Login & Register
+            </button>
+        </div>
+
+        <div class="mb-6 md:mb-8 opacity-0" style="animation: fadeIn 1s 0.8s forwards">
+            <button onclick="window.location.href='wheel.html'" 
+                    class="px-6 md:px-8 py-2.5 md:py-3 bg-purple-700/50 text-purple-200 text-base md:text-lg font-medium rounded-full border border-purple-400/30 md:border-2 hover:bg-purple-600/50 hover:border-purple-300/50 transition-all duration-300 flex items-center gap-2 active:scale-95 no-tap-highlight">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path>
+                </svg>
+                Guest Play
+            </button>
+        </div>
+
+        <div class="flex gap-4 opacity-0" style="animation: fadeIn 1s 1s forwards">
+            <button onclick="window.location.href='instructions.html'" 
+                    class="px-4 md:px-6 py-2 text-purple-300 hover:text-white transition-colors flex items-center gap-1.5 md:gap-2 text-xs md:text-base active:scale-95 no-tap-highlight">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                Instructions & About
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles - Capped at 12 on mobile for smooth performance
+        const particlesContainer = document.getElementById('particles');
+        const count = window.innerWidth < 768 ? 12 : 20; 
+        
+        for(let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particle.style.animationDuration = (3 + Math.random() * 4) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>

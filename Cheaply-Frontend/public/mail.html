@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Messages - Cheap Tycoon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            900: '#1a103c',
+                            800: '#2d1b69',
+                            700: '#4a2b99',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Unread pulse effect */
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(250, 204, 21, 0); }
+        }
+        .unread-glow { animation: pulse-gold 2s infinite; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .animate-fadeInDown { animation: fadeInDown 0.3s ease-out; }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile Adjustments */
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+        button:active { transform: scale(0.96); }
+        
+        /* Message Item Touch Feel */
+        .msg-item:active { background-color: rgba(255, 255, 255, 0.05); }
+
+        body { overscroll-behavior-y: contain; }
+
+        /* FIX 1 & 2: filter-btn active / inactive styles (JS toggles these via .filter-btn class + id matching) */
+        .filter-btn-active {
+            background: linear-gradient(to right, #9333ea, #db2777);
+            color: white;
+            font-weight: 900;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+        }
+        .filter-btn-inactive {
+            color: #d8b4fe;
+        }
+        .filter-btn-inactive:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen font-sans text-white flex flex-col h-screen overflow-hidden">
+    
+    <header class="bg-purple-900/60 backdrop-blur-md border-b border-purple-500/30 shrink-0 z-50 shadow-xl">
+        <div class="container mx-auto px-3 md:px-4 py-2.5 md:py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 md:gap-4">
+                    <button onclick="history.back()" class="bg-white/5 p-1.5 md:p-2 rounded-full text-white hover:bg-white/10 transition-all no-tap-highlight">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </button>
+                    <div class="flex items-center gap-1.5 md:gap-2">
+                        <svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                        </svg>
+                        <h1 class="text-lg md:text-2xl font-black uppercase italic tracking-tighter">Inbox</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- FIX 2: 手機版篩選按鈕補上 id 和 filter-btn class，讓 filterMessages() 可以正確切換 active 樣式 -->
+    <div class="md:hidden shrink-0 z-40 bg-purple-900/40 backdrop-blur-md border-b border-white/5 overflow-x-auto no-scrollbar">
+        <div class="flex p-2 gap-2 min-w-max px-3">
+            <button id="btn-all" onclick="filterMessages('all')" 
+                class="filter-btn px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors bg-purple-600 text-white">
+                All
+            </button>
+            <button id="btn-announcement" onclick="filterMessages('announcement')" 
+                class="filter-btn px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors bg-white/5 text-purple-300 border border-white/5">
+                Alerts
+            </button>
+            <button id="btn-reward" onclick="filterMessages('reward')" 
+                class="filter-btn px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors bg-white/5 text-purple-300 border border-white/5">
+                Rewards
+            </button>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-2 md:px-4 py-2 md:py-4 flex-1 overflow-hidden">
+        
+        <div class="bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl md:rounded-3xl shadow-2xl h-full flex flex-col md:flex-row relative overflow-hidden">
+
+            <!-- FIX 1: 桌機版側邊欄篩選按鈕補上 id 和 filter-btn class -->
+            <aside class="hidden md:flex flex-col w-56 shrink-0 bg-black/20 border-r border-white/5 p-4 space-y-2">
+                <button id="btn-all" onclick="filterMessages('all')" 
+                    class="filter-btn w-full text-left px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black uppercase text-xs tracking-widest shadow-lg transition-all">
+                    All Messages
+                </button>
+                <button id="btn-announcement" onclick="filterMessages('announcement')" 
+                    class="filter-btn w-full text-left px-4 py-3 rounded-xl text-purple-300 hover:bg-white/5 transition-all font-black uppercase text-xs tracking-widest">
+                    Announcements
+                </button>
+                <button id="btn-reward" onclick="filterMessages('reward')" 
+                    class="filter-btn w-full text-left px-4 py-3 rounded-xl text-purple-300 hover:bg-white/5 transition-all font-black uppercase text-xs tracking-widest">
+                    Rewards
+                </button>
+            </aside>
+
+            <div id="inboxView" class="flex-1 flex flex-col h-full overflow-hidden w-full">
+                <div class="h-8 md:h-10 shrink-0 border-b border-white/5 flex items-center px-3 md:px-4 justify-between text-gray-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em]">
+                    <div id="listStatus">Loading...</div>
+                    <div class="flex items-center gap-1.5 md:gap-2 cursor-pointer text-purple-400 no-tap-highlight hover:text-purple-300 transition-colors" onclick="fetchMessages()">
+                        <span>Refresh</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto no-scrollbar p-2 space-y-2 h-full pb-6" id="messageListContainer">
+                </div>
+            </div>
+
+            <div id="detailView" class="absolute inset-0 md:relative md:flex-1 bg-slate-900 md:bg-transparent z-[60] hidden flex-col h-full animate-fadeInDown w-full">
+                <div class="h-12 md:h-14 shrink-0 border-b border-white/10 flex items-center px-3 md:px-4 bg-black/40">
+                    <button onclick="backToInbox()" class="flex items-center gap-1 md:gap-2 text-purple-300 hover:text-white transition-colors font-black uppercase text-[10px] md:text-xs tracking-widest no-tap-highlight py-2 px-1">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        Close Message
+                    </button>
+                </div>
+
+                <!-- FIX 3: 桌機版初始空白提示，JS 偵測到內容為空時顯示 -->
+                <div class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 no-scrollbar pb-10" id="messageContentArea">
+                    <div id="emptyHint" class="hidden md:flex flex-col items-center justify-center h-full text-purple-400/40 select-none">
+                        <svg class="w-16 h-16 mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                        <p class="text-sm font-bold uppercase tracking-widest">Select a message to read</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:right-5 md:translate-x-0 opacity-0 transition-all duration-500 z-[100] pointer-events-none w-[90%] md:w-auto">
+        <div class="bg-slate-900/95 backdrop-blur-xl text-white px-4 py-3 md:px-6 md:py-4 rounded-xl md:rounded-2xl shadow-2xl flex items-center gap-3 md:gap-4 border border-purple-500/50">
+            <div id="toastIcon" class="text-xl md:text-2xl">🎉</div>
+            <div>
+                <h4 id="toastTitle" class="font-black text-[10px] md:text-xs text-yellow-400 uppercase tracking-widest">Notification</h4>
+                <p id="toastMessage" class="text-[10px] md:text-xs text-gray-300 mt-0.5 md:mt-1">Message content...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mail.js"></script>
+</body>
+</html>

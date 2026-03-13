@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin V6 - Cheap Tycoon</title>
+    
+    <script>
+        // 🛡️ 登入守門員 (立即執行)
+        (function() {
+            const token = localStorage.getItem('admin_token');
+            const user = localStorage.getItem('admin_user');
+            if (!token || !user) {
+                window.location.replace('admin_login.html');
+            }
+        })();
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+        .fade-enter { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .preview-glow { animation: pulse-gold 3s infinite; }
+        @keyframes pulse-gold { 0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.2); } 50% { box-shadow: 0 0 15px 0 rgba(250, 204, 21, 0.4); } }
+
+        /* 彈窗動畫 */
+        .modal-enter { animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .wallet-btn:hover { border-color: #fbbf24; background-color: rgba(31, 41, 55, 0.8); }
+        
+        /* Mobile specific fixes */
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        
+        /* Ensure table doesn't break layout on mobile */
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans flex flex-col md:flex-row h-screen overflow-hidden">
+
+    <aside class="md:w-64 bg-gray-800 border-t md:border-t-0 md:border-r border-gray-700 flex flex-row md:flex-col z-20 shadow-[0_-10px_20px_rgba(0,0,0,0.3)] md:shadow-2xl order-last md:order-first shrink-0">
+        <div class="h-20 hidden md:flex items-center px-6 border-b border-gray-700 bg-gray-800 shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="bg-yellow-500/20 p-2 rounded-lg border border-yellow-500/30">
+                    <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <span class="text-lg font-bold tracking-wider text-white">Tycoon Admin</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 flex flex-row md:flex-col py-2 md:py-6 px-2 md:px-3 gap-1 md:space-y-3 overflow-x-auto scrollbar-hide md:overflow-visible">
+            <button onclick="switchTab('sales')" id="nav-sales" class="nav-btn flex-1 md:w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-2 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 text-center md:text-left bg-purple-600 text-white shadow-lg border border-purple-500/50 min-w-[80px]">
+                <svg class="w-5 h-5 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[10px] md:text-base whitespace-nowrap">銷售與錢包</span>
+            </button>
+
+            <button onclick="switchTab('users')" id="nav-users" class="nav-btn flex-1 md:w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-2 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 text-center md:text-left text-gray-400 hover:bg-gray-700 hover:text-white min-w-[80px]">
+                <svg class="w-5 h-5 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span class="text-[10px] md:text-base whitespace-nowrap">客戶資料</span>
+            </button>
+            
+            <button onclick="switchTab('mail')" id="nav-mail" class="nav-btn flex-1 md:w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-2 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 text-center md:text-left text-gray-400 hover:bg-gray-700 hover:text-white min-w-[80px]">
+                <svg class="w-5 h-5 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                <span class="text-[10px] md:text-base whitespace-nowrap">系統發信</span>
+            </button>
+
+            <button onclick="switchTab('lottery')" id="nav-lottery" class="nav-btn flex-1 md:w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-2 md:px-4 py-2 md:py-3 rounded-xl transition-all duration-200 text-center md:text-left text-gray-400 hover:bg-gray-700 hover:text-white min-w-[80px]">
+                <svg class="w-5 h-5 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                <span class="text-[10px] md:text-base whitespace-nowrap">市場監控</span>
+            </button>
+        </nav>
+
+        <div class="hidden md:block p-4 border-t border-gray-700 shrink-0">
+            <button onclick="handleAdminLogout()" class="flex items-center justify-center gap-2 text-red-400 hover:bg-red-900/20 hover:text-red-300 transition-colors w-full px-4 py-2 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                安全登出
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-900 relative order-first md:order-last">
+        
+        <header class="h-16 md:h-20 bg-gray-800/80 backdrop-blur border-b border-gray-700 flex items-center justify-between px-4 md:px-8 z-10 shrink-0">
+            <h2 class="text-lg md:text-2xl font-bold text-white tracking-tight truncate mr-2" id="pageTitle">代幣銷售與錢包</h2>
+            
+            <div class="flex items-center gap-3 md:gap-6">
+                <div id="adminWalletStatus" class="flex items-center gap-1.5 md:gap-3 bg-black/30 px-2 md:px-4 py-1.5 md:py-2 rounded-full border border-gray-600">
+                    <span class="w-1.5 h-1.5 md:w-2 md:h-2 bg-red-500 rounded-full shrink-0" id="walletDot"></span>
+                    <span class="text-[10px] md:text-sm font-mono text-gray-300 truncate max-w-[60px] md:max-w-[150px]" id="walletAddr">未連結</span>
+                    <button onclick="openWalletModal()" id="connectBtn" class="text-[10px] md:text-xs bg-indigo-600 hover:bg-indigo-500 px-2 md:px-3 py-1 rounded text-white font-bold transition-colors">連結</button>
+                </div>
+                
+                <div class="flex items-center gap-3 md:border-l md:border-gray-600 md:pl-6">
+                    <div class="text-right hidden md:block">
+                        <div class="text-sm font-bold text-white">Admin_Manager</div>
+                        <div class="text-xs text-gray-400">權限: 最高管理員</div>
+                    </div>
+                    <button onclick="window.innerWidth < 768 ? handleAdminLogout() : null" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white border-2 border-gray-600 shadow-md shrink-0">
+                        <span class="md:hidden text-xs">出</span>
+                        <span class="hidden md:inline">M</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth relative no-tap-highlight">
+
+            <div id="view-sales" class="space-y-6 md:space-y-8 fade-enter">
+
+                <div class="col-span-1 lg:col-span-3 bg-gray-800 p-4 md:p-6 rounded-xl md:rounded-2xl border border-yellow-500/30 shadow-xl relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
+                        
+                        <div class="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+                            <div class="bg-yellow-500/20 p-2 md:p-3 rounded-xl animate-pulse shrink-0">
+                                <span class="text-3xl md:text-4xl">👑</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg md:text-xl font-bold text-white">Grand Jackpot Monitor</h3>
+                                <div id="jackpotStatusBadge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold mt-1 bg-gray-700 text-gray-400">
+                                    <span class="w-2 h-2 rounded-full bg-gray-500"></span> Loading...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="jackpotWinnerInfo" class="hidden w-full md:flex-1 bg-gray-900/50 rounded-xl p-3 md:p-4 border border-gray-700 text-center">
+                            <p class="text-gray-400 text-[10px] md:text-xs uppercase tracking-widest mb-1">Won By</p>
+                            <p class="text-xl md:text-2xl font-bold text-yellow-400 truncate" id="winnerName">---</p>
+                            <p class="text-gray-500 text-[10px] md:text-xs mt-1" id="winDate">---</p>
+                        </div>
+
+                        <div class="text-left md:text-right w-full md:w-auto border-t md:border-t-0 border-gray-700 pt-4 md:pt-0 mt-2 md:mt-0">
+                            <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase mb-1 md:mb-2">Current Prize Pool</p>
+                            <p class="text-2xl md:text-3xl font-black text-white font-mono mb-3 md:mb-4">500,000,000</p>
+                            <button onclick="resetJackpot()" class="w-full md:w-auto bg-red-600/20 hover:bg-red-600 hover:text-white text-red-400 border border-red-500/50 px-6 py-2.5 md:py-2 rounded-lg font-bold text-sm transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2 md:ml-auto">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                Force Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                    <div class="bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-gray-700 shadow-xl relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10"><svg class="w-16 h-16 md:w-24 md:h-24 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path></svg></div>
+                        <p class="text-gray-400 text-xs md:text-sm font-bold uppercase">當前錢包餘額 (Revenue)</p>
+                        <p class="text-2xl md:text-3xl font-bold text-white mt-2 truncate">$ 128,450 <span class="text-xs md:text-sm text-gray-500">USDT</span></p>
+                        <p class="text-green-400 text-[10px] md:text-xs mt-2">指定錢包收款中</p>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-gray-700 shadow-xl relative">
+                        <h3 class="text-base md:text-lg font-bold text-white mb-3 md:mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            資金歸集 / 利潤轉移
+                        </h3>
+                        <div class="flex flex-col md:flex-row gap-3 md:gap-4 items-end">
+                            <div class="flex-1 w-full">
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-400 mb-1">接收端安全錢包 (Safe Wallet)</label>
+                                <input type="text" id="destinationAddress" placeholder="輸入您的冷錢包地址 (0x...)" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 md:px-4 md:py-2 text-white font-mono text-xs md:text-sm focus:border-blue-500 outline-none transition-colors">
+                            </div>
+                            <div class="w-full md:w-40">
+                                <label class="block text-[10px] md:text-xs font-bold text-gray-400 mb-1">轉出金額 (USDT)</label>
+                                <input type="number" id="transferAmount" placeholder="0.00" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 md:px-4 md:py-2 text-white font-mono text-xs md:text-sm focus:border-blue-500 outline-none transition-colors">
+                            </div>
+                            <button onclick="transferFunds()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 md:py-2 rounded-lg font-bold shadow-lg transition-transform active:scale-95 whitespace-nowrap mt-2 md:mt-0 text-sm md:text-base">
+                                轉出資金
+                            </button>
+                        </div>
+                        <p class="text-[9px] md:text-xs text-gray-500 mt-3 md:mt-2">* 僅能從當前連接的指定錢包轉出。操作不可逆，請確認地址。</p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl md:rounded-2xl border border-gray-700 shadow-xl p-5 md:p-8">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 border-b border-gray-700 pb-4 gap-3">
+                        <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2 md:gap-3">
+                            <div class="bg-yellow-500/20 p-1.5 md:p-2 rounded-lg shrink-0"><svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>
+                            代幣庫存監控
+                        </h3>
+                        <span class="bg-green-900/30 text-green-400 px-3 py-1.5 rounded-full text-xs md:text-sm font-bold border border-green-500/30 flex items-center gap-2 self-start md:self-auto">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> 供應充足
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                        <div class="text-center md:text-left space-y-2">
+                            <p class="text-gray-400 text-xs md:text-sm font-bold uppercase tracking-widest">當前可售餘額</p>
+                            <p class="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tight drop-shadow-lg truncate">
+                                54,800,000 
+                                <span class="text-lg md:text-2xl text-purple-400 font-bold ml-1">TKN</span>
+                            </p>
+                            <div class="inline-block bg-gray-900 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-gray-600 mt-2 md:mt-4">
+                                <span class="text-gray-500 text-[10px] md:text-xs mr-1 md:mr-2">總供應量:</span>
+                                <span class="text-white font-mono font-bold text-xs md:text-sm">100,000,000 TKN</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full">
+                            <div class="flex justify-between text-xs md:text-sm mb-2 md:mb-3 font-bold">
+                                <span class="text-yellow-400">已售出</span>
+                                <span class="text-purple-300">剩餘</span>
+                            </div>
+                            <div class="w-full bg-purple-900/30 rounded-full h-6 md:h-8 overflow-hidden flex shadow-inner border border-gray-600 relative">
+                                <div class="bg-gradient-to-r from-yellow-600 to-yellow-400 h-full flex items-center justify-end pr-2 md:pr-3 text-[10px] md:text-xs text-black font-extrabold shadow-[0_0_15px_rgba(250,204,21,0.5)] z-10" style="width: 45.2%">
+                                    45.2%
+                                </div>
+                            </div>
+                            <div class="mt-4 md:mt-6 grid grid-cols-2 gap-3 md:gap-4">
+                                <div class="bg-gray-900/50 p-3 md:p-4 rounded-xl border border-gray-600 text-center md:text-left">
+                                    <p class="text-gray-400 text-[10px] md:text-xs mb-1">已售出總額</p>
+                                    <p class="text-lg md:text-xl font-bold text-yellow-400 truncate">45,200,000</p>
+                                </div>
+                                <div class="bg-gray-900/50 p-3 md:p-4 rounded-xl border border-gray-600 text-center md:text-left">
+                                    <p class="text-gray-400 text-[10px] md:text-xs mb-1">預留/鎖倉</p>
+                                    <p class="text-lg md:text-xl font-bold text-white truncate">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-users" class="hidden space-y-4 md:space-y-6 fade-enter">
+                <div class="flex justify-end">
+                    <button onclick="downloadCSV()" class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-sm md:text-base font-bold shadow-lg transition-transform active:scale-95 w-full md:w-auto">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        下載客戶資料 (CSV)
+                    </button>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl md:rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+                    <div class="table-responsive-wrapper">
+                        <table class="w-full text-left text-xs md:text-sm text-gray-400 min-w-[600px]">
+                            <thead class="bg-gray-700 text-gray-200 uppercase font-bold text-[10px] md:text-xs whitespace-nowrap">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-3 md:py-4">ID</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4">姓名 / 暱稱</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4">錢包地址</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4">等級</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 text-right">持有代幣 (Tokens)</th>
+                                    <th class="px-4 md:px-6 py-3 md:py-4 text-right">購買總額</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-700" id="usersTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-mail" class="hidden flex flex-col gap-4 md:gap-6 fade-enter h-full">
+                <div class="flex flex-col lg:flex-row gap-4 md:gap-6 flex-shrink-0">
+                    
+                    <div class="w-full lg:w-1/2 flex flex-col bg-gray-800 rounded-xl border border-gray-700 p-4 md:p-6 shadow-lg">
+                        <h3 class="text-base md:text-lg font-bold text-white mb-3 md:mb-4">撰寫信件</h3>
+                        <div class="space-y-3 flex-1 overflow-y-auto pr-1">
+                            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                                <button onclick="loadTemplate('promo')" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] md:text-xs text-white whitespace-nowrap shrink-0">🎉 Promo Event</button>
+                                <button onclick="loadTemplate('maintenance')" class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-[10px] md:text-xs text-white whitespace-nowrap shrink-0">⚠️ Maintenance</button>
+                            </div>
+                            
+                            <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-600 mb-2 space-y-2">
+                                <label class="text-[10px] md:text-xs text-gray-400 font-bold uppercase">Recipient (收件對象)</label>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <select id="targetType" onchange="toggleTargetInput()" class="w-full sm:w-auto bg-gray-800 text-white text-xs md:text-sm border border-gray-600 rounded-lg px-3 py-2 outline-none focus:border-purple-500">
+                                        <option value="ALL">📢 All Users (全體廣播)</option>
+                                        <option value="SINGLE">👤 Specific User (指定玩家)</option>
+                                    </select>
+                                    <input type="text" id="targetUser" placeholder="Username (e.g. k)" class="hidden w-full sm:flex-1 bg-gray-800 text-white text-xs md:text-sm border border-gray-600 rounded-lg px-3 py-2 outline-none focus:border-purple-500 transition-all">
+                                </div>
+                            </div>
+                            
+                            <input type="text" id="inputTitle" oninput="updatePreview()" placeholder="信件標題" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 md:px-4 md:py-2 text-white text-xs md:text-sm outline-none transition-colors focus:border-purple-500">
+                            <input type="text" id="inputSender" oninput="updatePreview()" value="Cheap Tycoon Admin" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 md:px-4 md:py-2 text-white text-xs md:text-sm outline-none transition-colors focus:border-purple-500">
+                            <textarea id="inputBody" oninput="updatePreview()" class="w-full h-32 md:h-40 bg-gray-900 border border-gray-600 rounded-lg p-3 text-white text-xs md:text-sm outline-none transition-colors focus:border-purple-500" placeholder="HTML 內容..."></textarea>
+
+                            <div class="bg-gray-900/50 p-3 rounded-lg border border-gray-600 space-y-2">
+                                <label class="text-[10px] md:text-xs text-gray-400 font-bold uppercase">附加獎勵 (選填)</label>
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <select id="rewardType" onchange="toggleRewardInput()" class="w-full sm:w-auto bg-gray-800 text-white text-xs border border-gray-600 rounded px-2 py-1.5 md:py-1 outline-none">
+                                        <option value="none">無獎勵 (純公告)</option>
+                                        <option value="token">💰 代幣 (Tokens)</option>
+                                        <option value="spin">🎡 轉盤次數 (Spins)</option>
+                                        <option value="card">🃏 卡片 (Card Name)</option>
+                                    </select>
+                                    <input type="text" id="rewardValue" disabled placeholder="數量 (例如: 1000)" class="w-full sm:flex-1 bg-gray-800 text-white text-xs border border-gray-600 rounded px-2 py-1.5 md:py-1 outline-none disabled:opacity-50">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pt-3 md:pt-4 mt-auto">
+                            <button onclick="sendMailWithPreview()" class="w-full bg-purple-600 hover:bg-purple-500 text-white py-2.5 md:py-2 rounded-lg font-bold shadow-lg transition-transform active:scale-95 text-sm md:text-base">發送給用戶</button>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-1/2 bg-gray-800 rounded-xl border border-gray-700 p-4 shadow-lg flex flex-col items-center justify-center min-h-[300px]">
+                        <div class="bg-gray-900 border-2 md:border-4 border-gray-700 rounded-2xl md:rounded-3xl relative overflow-hidden shadow-2xl w-full max-w-sm h-full max-h-[400px] flex flex-col">
+                            <div class="bg-purple-900/90 p-2 md:p-3 flex items-center gap-2 shrink-0"><div class="w-3 h-3 md:w-4 md:h-4 bg-purple-800 rounded-full"></div><span class="text-white text-[10px] md:text-xs font-bold">System Inbox</span></div>
+                            <div class="flex-1 bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 p-3 md:p-4 overflow-y-auto">
+                                <div class="bg-gray-900/80 backdrop-blur border border-purple-500/30 rounded-xl p-3 md:p-4 shadow-2xl preview-glow">
+                                    <div class="flex justify-between mb-2 md:mb-3"><span class="text-lg md:text-xl">📢</span><span class="text-white font-bold text-xs md:text-sm" id="previewSender">Admin</span></div>
+                                    <h2 class="text-base md:text-lg font-bold text-white mb-2" id="previewTitle">標題</h2>
+                                    <div class="prose prose-invert prose-sm text-purple-100 text-[10px] md:text-xs" id="previewBody">內容...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden flex flex-col min-h-[250px]">
+                    <div class="p-3 md:p-4 border-b border-gray-700 bg-gray-750 flex justify-between md:justify-start items-center gap-2 shrink-0">
+                        <h3 class="text-base md:text-lg font-bold text-white">寄件備份 & 撤銷</h3>
+                        <span class="text-[10px] md:text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full" id="historyCount">2</span>
+                    </div>
+                    <div class="overflow-y-auto table-responsive-wrapper">
+                        <table class="w-full text-left text-xs md:text-sm text-gray-400 min-w-[500px]">
+                            <thead class="bg-gray-700/50 text-gray-300 uppercase font-bold text-[10px] md:text-xs sticky top-0 z-10">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-2 md:py-3">日期</th>
+                                    <th class="px-4 md:px-6 py-2 md:py-3">標題</th>
+                                    <th class="px-4 md:px-6 py-2 md:py-3 text-center">狀態</th>
+                                    <th class="px-4 md:px-6 py-2 md:py-3 text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mailHistoryBody" class="divide-y divide-gray-700">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-lottery" class="hidden space-y-6 md:space-y-8 fade-enter">
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                    <div class="bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-indigo-500/30 shadow-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase">Current Ticket Price</p>
+                                <p class="text-2xl md:text-3xl font-black text-white mt-1" id="adminPrice">$0.00</p>
+                            </div>
+                            <div class="bg-indigo-900/50 p-2 rounded-lg text-indigo-300">
+                                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <input type="number" id="manualPriceInput" placeholder="Set Price" class="bg-gray-900 border border-gray-600 rounded px-2 md:px-3 py-1.5 md:py-1 text-white text-xs md:text-sm w-full md:w-24 outline-none focus:border-indigo-500">
+                            <button onclick="setMarketPrice()" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-1.5 md:py-1 rounded font-bold shrink-0">SET</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-yellow-500/30 shadow-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase">Active Season Pool</p>
+                                <p class="text-2xl md:text-3xl font-black text-yellow-400 mt-1 truncate" id="adminPot">$0</p>
+                            </div>
+                            <div class="bg-yellow-900/50 p-2 rounded-lg text-yellow-300 shrink-0">
+                                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                        </div>
+                        <p class="text-[10px] md:text-xs text-gray-500 mt-2">來自現貨手續費與輸家資金</p>
+                    </div>
+
+                    <div class="bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-blue-500/30 shadow-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase">Next Settlement</p>
+                                <p class="text-2xl md:text-3xl font-mono font-bold text-blue-300 mt-1" id="adminTimer">--:--:--</p>
+                            </div>
+                            <div class="bg-blue-900/50 p-2 rounded-lg text-blue-300 shrink-0">
+                                <svg class="w-5 h-5 md:w-6 md:h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                        </div>
+                        <p class="text-[10px] md:text-xs text-gray-500 mt-2">System auto-updates every 6 hours</p>
+                    </div>
+
+                    <div class="md:col-span-3 bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-red-500/30 shadow-lg relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <svg class="w-12 h-12 md:w-16 md:h-16 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </div>
+                        
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-gray-400 text-[10px] md:text-xs font-bold uppercase">Season Win Chance</p>
+                                <p class="text-2xl md:text-3xl font-black text-red-400 mt-1" id="adminWinChance">--%</p>
+                            </div>
+                            <div class="bg-red-900/50 p-2 rounded-lg text-red-300 shrink-0">
+                                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2 relative z-10 max-w-sm">
+                            <label class="text-[10px] md:text-xs text-gray-500">設定新機率 (0.0 ~ 1.0)</label>
+                            <div class="flex gap-2">
+                                <input type="number" id="winChanceInput" placeholder="0.5" step="0.1" max="1" min="0" class="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm w-full outline-none focus:border-red-500 transition-colors">
+                                <button onclick="setWinChance()" class="bg-red-600 hover:bg-red-500 text-white px-4 md:px-6 py-2 rounded-lg font-bold text-sm shadow-lg active:scale-95 transition-all shrink-0">
+                                    Update
+                                </button>
+                            </div>
+                            <div class="flex gap-2 mt-1 flex-wrap">
+                                <button onclick="quickSetChance(0)" class="text-[9px] md:text-[10px] text-gray-400 hover:text-white bg-gray-700 px-2 py-1 rounded">0% (必流局)</button>
+                                <button onclick="quickSetChance(0.5)" class="text-[9px] md:text-[10px] text-gray-400 hover:text-white bg-gray-700 px-2 py-1 rounded">50%</button>
+                                <button onclick="quickSetChance(1)" class="text-[9px] md:text-[10px] text-gray-400 hover:text-white bg-gray-700 px-2 py-1 rounded">100% (必中)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 p-5 md:p-6 rounded-xl md:rounded-2xl border border-gray-700 shadow-xl">
+                    <h3 class="text-base md:text-lg font-bold text-white mb-3 md:mb-4">Futures Sentiment (多空分佈)</h3>
+                    
+                    <div class="flex justify-between text-[10px] md:text-xs font-bold uppercase mb-2">
+                        <span class="text-green-400">🐂 Bulls (UP): <span id="admUpVal">$0</span></span>
+                        <span class="text-red-400">🐻 Bears (DOWN): <span id="admDownVal">$0</span></span>
+                    </div>
+                    <div class="h-3 md:h-4 bg-gray-700 rounded-full overflow-hidden flex relative">
+                        <div id="admBarUp" class="h-full bg-green-500 transition-all duration-500" style="width: 50%"></div>
+                        <div id="admBarDown" class="h-full bg-red-500 flex-1 transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-xl md:rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+                    <div class="p-3 md:p-4 border-b border-gray-700 flex justify-between items-center">
+                        <h3 class="text-base md:text-lg font-bold text-white">Live Market Feed</h3>
+                        <button onclick="loadLotteryData()" class="text-[10px] md:text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded transition-colors no-tap-highlight">Refresh</button>
+                    </div>
+                    <div class="table-responsive-wrapper">
+                        <table class="w-full text-left text-xs md:text-sm text-gray-400 min-w-[500px]">
+                            <thead class="bg-gray-700/50 text-gray-300 uppercase font-bold text-[10px] md:text-xs">
+                                <tr>
+                                    <th class="px-4 md:px-6 py-2 md:py-3">Time</th>
+                                    <th class="px-4 md:px-6 py-2 md:py-3">User</th>
+                                    <th class="px-4 md:px-6 py-2 md:py-3">Action</th>
+                                    <th class="px-4 md:px-6 py-2 md:py-3 text-right">Amount / Info</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lotteryLogBody" class="divide-y divide-gray-700">
+                                <tr><td colspan="4" class="text-center py-4">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <div id="walletModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="closeWalletModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="w-full max-w-sm bg-gray-900 border border-purple-500/30 rounded-2xl md:rounded-3xl shadow-2xl pointer-events-auto modal-enter overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600 rounded-full blur-[60px] opacity-20 pointer-events-none"></div>
+                <div class="p-5 md:p-6 pb-2 flex justify-between items-center relative z-10">
+                    <h2 class="text-lg md:text-xl font-bold text-white flex items-center gap-2">
+                        <span class="bg-gradient-to-br from-[#9945FF] to-[#14F195] w-2 h-5 md:h-6 rounded-full"></span>
+                        連結 Solana 錢包
+                    </h2>
+                    <button onclick="closeWalletModal()" class="text-gray-400 hover:text-white transition-colors bg-white/5 p-1.5 md:p-2 rounded-full hover:bg-white/10 no-tap-highlight">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="px-5 md:px-6 pb-5 md:pb-6 relative z-10">
+                    <p class="text-gray-400 text-xs md:text-sm mb-4 md:mb-6">請選擇官方指定錢包進行連接</p>
+                    <div class="space-y-3">
+                        <button onclick="connectSolanaWallet('Phantom')" class="wallet-btn w-full bg-gray-800/50 border border-gray-700 p-3 md:p-4 rounded-xl flex items-center justify-between group transition-all duration-300 no-tap-highlight">
+                            <div class="flex items-center gap-3 md:gap-4">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-[#AB9FF2]/20 flex items-center justify-center p-1">
+                                    <svg viewBox="0 0 24 24" class="w-full h-full text-[#AB9FF2]" fill="currentColor"><path d="M18.8 4.2C15.6 2.8 13.5 4.5 12.4 6c-1.3 1.8-2.4 4.5-2.4 4.5s-1.8-1.5-3.5-1.5c-2.3 0-4.5 2-4.5 5.5s2.5 5.5 5.5 5.5c2.8 0 4.5-2.2 4.5-2.2s.5 2.2 3.5 2.2 5.5-2.5 5.5-6.5c0-5.5-2.2-9.3-2.2-9.3z"/></svg>
+                                </div>
+                                <span class="text-white font-bold text-base md:text-lg">Phantom</span>
+                            </div>
+                            <span class="text-[10px] md:text-xs text-gray-500 bg-gray-900 px-2 py-1 rounded border border-gray-700">推薦</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mailDetailModal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="closeMailModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+            <div class="w-full max-w-lg bg-gray-900 border border-purple-500/30 rounded-xl md:rounded-2xl shadow-2xl pointer-events-auto modal-enter flex flex-col max-h-[85vh] md:max-h-[80vh]">
+                
+                <div class="p-4 md:p-5 border-b border-gray-700 flex justify-between items-center bg-gray-800 rounded-t-xl md:rounded-t-2xl shrink-0">
+                    <h3 class="text-lg md:text-xl font-bold text-white flex items-center gap-2 truncate">
+                        <span id="detailIcon" class="shrink-0">📧</span>
+                        <span id="detailTitle" class="truncate">Mail Title</span>
+                    </h3>
+                    <button onclick="closeMailModal()" class="text-gray-400 hover:text-white p-1.5 hover:bg-gray-700 rounded-full transition-colors shrink-0 no-tap-highlight">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="p-4 md:p-6 overflow-y-auto space-y-4 text-xs md:text-sm text-gray-300">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] md:text-xs text-gray-500 uppercase font-bold">Sender</span>
+                            <p class="text-white font-medium" id="detailSender">Admin</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] md:text-xs text-gray-500 uppercase font-bold">Date</span>
+                            <p class="text-white font-mono text-[10px] md:text-sm" id="detailDate">2026-01-01</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800/50 p-3 md:p-4 rounded-lg md:rounded-xl border border-gray-700/50">
+                        <span class="text-[10px] md:text-xs text-gray-500 uppercase font-bold block mb-2">Content</span>
+                        <div id="detailBody" class="prose prose-invert prose-sm max-w-none text-xs md:text-sm break-words">
+                        </div>
+                    </div>
+
+                    <div id="detailRewardSection" class="hidden bg-yellow-900/20 border border-yellow-500/30 p-2 md:p-3 rounded-lg flex items-center gap-2 md:gap-3">
+                        <div class="bg-yellow-500/20 p-1.5 md:p-2 rounded-lg shrink-0">
+                            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-yellow-500 text-[9px] md:text-xs font-bold uppercase">Attached Reward</p>
+                            <p class="text-white font-bold text-xs md:text-base truncate" id="detailReward">1000 Tokens</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 md:p-4 border-t border-gray-700 bg-gray-800 rounded-b-xl md:rounded-b-2xl text-right shrink-0">
+                    <button onclick="closeMailModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors w-full md:w-auto no-tap-highlight">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin_game.js"></script>
+
+</body>
+</html>

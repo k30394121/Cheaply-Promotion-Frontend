@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Welcome - Cheap Tycoon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // ✅ 防止已登入用戶回到登入/註冊頁
+        (function() {
+            const user = localStorage.getItem('currentUser');
+            // 如果有登入紀錄，且不是 "user1" (訪客預設值，視您的需求而定)
+            // 這裡假設 user1 也是一種登入狀態，或者您可以只檢查 if (user)
+            if (user) {
+                window.location.replace('wheel.html'); // 使用 replace 不會留上一頁紀錄
+            }
+        })();
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 讓卡片 Hover 時邊框流動的效果 */
+        .card-hover:hover {
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
+            border-color: rgba(251, 191, 36, 0.5);
+        }
+
+        /* Mobile Touch Fixes */
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen overflow-x-hidden font-sans relative">
+    
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute w-64 h-64 md:w-96 md:h-96 bg-pink-500 rounded-full blur-[80px] md:blur-3xl opacity-20 -top-24 -left-24 md:-top-48 md:-left-48 animate-pulse"></div>
+        <div class="absolute w-64 h-64 md:w-96 md:h-96 bg-purple-500 rounded-full blur-[80px] md:blur-3xl opacity-20 -bottom-24 -right-24 md:-bottom-48 md:-right-48 animate-pulse"></div>
+        <div id="particles" class="absolute inset-0"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 py-12 md:py-0">
+        
+        <a href="index.html" class="absolute top-4 left-4 md:top-6 md:left-6 text-purple-200 hover:text-white transition-colors flex items-center gap-2 opacity-0 z-20 group no-tap-highlight" style="animation: fadeIn 0.5s forwards">
+            <div class="p-1.5 md:p-2 rounded-full bg-purple-800/30 border border-purple-500/20 group-hover:bg-purple-700/50 transition-all">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+            </div>
+            <span class="font-medium text-[10px] md:text-base uppercase tracking-widest md:tracking-normal md:capitalize">Back</span>
+        </a>
+
+        <div class="mb-8 md:mb-10 text-center opacity-0 mt-8 md:mt-0" style="animation: fadeIn 0.8s forwards">
+            <div class="flex items-center justify-center gap-2 mb-1 md:mb-2">
+                <svg class="w-8 h-8 md:w-10 md:h-10 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-2xl md:text-3xl font-bold text-white tracking-wide">Cheap Tycoon</span>
+            </div>
+            <p class="text-purple-200 text-xs md:text-sm tracking-widest uppercase">Choose your path</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full max-w-4xl relative">
+            
+            <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden md:flex flex-col items-center justify-center z-20 pointer-events-none opacity-0" style="animation: fadeIn 1s 0.5s forwards">
+                <div class="h-12 w-px bg-purple-400/30"></div>
+                <div class="bg-purple-900 border border-purple-500/50 rounded-full w-10 h-10 flex items-center justify-center text-xs font-bold text-purple-200 my-2">OR</div>
+                <div class="h-12 w-px bg-purple-400/30"></div>
+            </div>
+
+            <a href="login.html" class="group relative block w-full opacity-0 no-tap-highlight" style="animation: fadeIn 0.8s 0.2s forwards">
+                <div class="h-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 transition-all duration-300 card-hover hover:bg-purple-900/60 md:hover:-translate-y-2 active:scale-[0.98]">
+                    
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-purple-800/50 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 border border-purple-500/30">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-purple-300 group-hover:text-yellow-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                        </svg>
+                    </div>
+
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">Log In</h3>
+                    <p class="text-purple-200 text-xs md:text-sm mb-5 md:mb-6 min-h-[3rem] md:min-h-[2.5rem]">Already have a fortune? Continue building your empire where you left off.</p>
+                    
+                    <div class="flex items-center text-yellow-400 text-sm md:text-base font-bold md:group-hover:translate-x-2 transition-transform">
+                        Access Account
+                        <svg class="w-4 h-4 md:w-5 md:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                    </div>
+                </div>
+            </a>
+
+            <div class="flex items-center justify-center md:hidden w-full opacity-0 my-1" style="animation: fadeIn 1s 0.5s forwards">
+                <div class="flex-1 h-px bg-purple-400/30"></div>
+                <span class="px-4 text-[10px] font-bold text-purple-300 uppercase tracking-widest">OR</span>
+                <div class="flex-1 h-px bg-purple-400/30"></div>
+            </div>
+
+            <a href="signup.html" class="group relative block w-full opacity-0 no-tap-highlight" style="animation: fadeIn 0.8s 0.4s forwards">
+                <div class="h-full bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/20 rounded-2xl md:rounded-3xl p-6 md:p-8 transition-all duration-300 card-hover hover:bg-white/10 md:hover:-translate-y-2 active:scale-[0.98]">
+                    
+                    <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 md:w-24 md:h-24 bg-yellow-400 rounded-full blur-2xl md:blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-yellow-500/20 flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-300 border border-yellow-500/30">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-yellow-300 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                    </div>
+
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors">Register</h3>
+                    <p class="text-purple-200 text-xs md:text-sm mb-5 md:mb-6 min-h-[3rem] md:min-h-[2.5rem]">New to the metaverse? Create your wallet identity and start spinning.</p>
+                    
+                    <div class="flex items-center text-yellow-400 text-sm md:text-base font-bold md:group-hover:translate-x-2 transition-transform">
+                        Create Account
+                        <svg class="w-4 h-4 md:w-5 md:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="mt-8 md:mt-12 opacity-0" style="animation: fadeIn 1s 0.8s forwards">
+            <a href="wheel.html" class="text-xs md:text-sm text-purple-300 hover:text-white transition-colors flex items-center justify-center gap-2 border-b border-transparent hover:border-purple-300 pb-1 py-2 px-4 no-tap-highlight">
+                Just want to look around? Play as Guest
+                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        const particlesContainer = document.getElementById('particles');
+        const count = window.innerWidth < 768 ? 12 : 20; // Reduced particle count slightly for mobile performance
+        for(let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'absolute rounded-full opacity-30 animate-float';
+            const size = Math.random() * 5 + 2 + 'px';
+            particle.style.width = size;
+            particle.style.height = size;
+            particle.style.backgroundColor = Math.random() > 0.5 ? '#fbbf24' : '#d8b4fe';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>

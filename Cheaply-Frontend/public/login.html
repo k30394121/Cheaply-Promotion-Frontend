@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - Cheap Tycoon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+
+        /* Error Styles */
+        .input-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3) !important;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+
+        /* Mobile Touch Fixes */
+        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
+        
+        /* Ensure inputs don't look weird on iOS */
+        input { -webkit-appearance: none; border-radius: 0.75rem; }
+
+        /* Handle keyboard overlap on short screens */
+        body { overscroll-behavior-y: contain; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen font-sans text-white relative">
+    
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute w-48 h-48 md:w-96 md:h-96 bg-pink-500 rounded-full blur-[80px] md:blur-3xl opacity-20 -top-12 -left-12 md:-top-24 md:-left-24 animate-pulse"></div>
+        <div class="absolute w-48 h-48 md:w-96 md:h-96 bg-purple-500 rounded-full blur-[80px] md:blur-3xl opacity-20 -bottom-12 -right-12 md:-bottom-24 md:-right-24 animate-pulse"></div>
+        <!-- FIX: 移除內嵌粒子 script，統一交由 login.js 的 initParticles() 處理，避免粒子重複初始化 -->
+        <div id="particles" class="absolute inset-0"></div>
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 md:px-6 py-8 md:py-10">
+        
+        <button onclick="window.location.href='index.html'" class="absolute top-4 left-4 md:top-6 md:left-6 text-purple-200 hover:text-white transition-all flex items-center gap-2 no-tap-highlight active:scale-90">
+            <div class="p-1.5 md:p-2 rounded-full bg-white/10 border border-white/10">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            </div>
+            <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest hidden sm:inline">Back</span>
+        </button>
+
+        <div class="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl relative overflow-hidden mt-6 md:mt-0">
+            <div class="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-yellow-400 rounded-full blur-2xl md:blur-3xl opacity-10 -mr-6 -mt-6 md:-mr-10 md:-mt-10 pointer-events-none"></div>
+            
+            <div class="text-center mb-6 md:mb-8">
+                <div class="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 mb-3 md:mb-4 shadow-xl">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-purple-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-white">Welcome Back</h2>
+                <p class="text-purple-300 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-1">Enter your credentials</p>
+            </div>
+
+            <form id="loginForm" class="space-y-3 md:space-y-4">
+                
+                <div class="space-y-1 md:space-y-1.5">
+                    <label class="block text-purple-200 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] ml-1">Username</label>
+                    <div class="relative">
+                        <input type="text" id="loginUser" class="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-3 md:px-4 md:py-4 pr-10 md:pr-12 text-sm md:text-base text-white placeholder-purple-400/50 focus:outline-none focus:border-yellow-400 transition-all no-tap-highlight" placeholder="Tycoon Name">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 text-purple-400/50 absolute right-3 md:right-4 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                </div>
+
+                <div class="space-y-1 md:space-y-1.5">
+                    <label class="block text-purple-200 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] ml-1">Password</label>
+                    <div class="relative">
+                        <input type="password" id="loginPass" class="w-full bg-black/30 border border-white/10 rounded-xl px-3 py-3 md:px-4 md:py-4 pr-10 md:pr-12 text-sm md:text-base text-white placeholder-purple-400/50 focus:outline-none focus:border-yellow-400 transition-all no-tap-highlight" placeholder="••••••••">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 text-purple-400/50 absolute right-3 md:right-4 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                </div>
+
+                <div id="loginErrorMsg" class="hidden text-red-400 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-center bg-red-900/20 py-2.5 md:py-3 rounded-xl border border-red-500/30">
+                    ⚠️ Invalid Credentials
+                </div>
+
+                <button type="submit" id="loginBtn" class="w-full py-4 md:py-5 bg-gradient-to-r from-yellow-400 to-orange-500 text-purple-950 text-sm md:text-base font-black rounded-xl md:rounded-2xl shadow-xl active:scale-95 transition-all uppercase tracking-widest mt-4 md:mt-6 no-tap-highlight">
+                    Log In
+                </button>
+            </form>
+
+            <div class="mt-8 md:mt-10 text-center">
+                <p class="text-purple-300 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                    No account? 
+                    <a href="signup.html" class="text-yellow-400 ml-1 border-b border-yellow-400/30 pb-0.5 no-tap-highlight active:opacity-50">Register</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIX: 內嵌粒子 script 已移除，由 login.js 的 initParticles() 統一負責 -->
+    <script src="js/login.js"></script>
+</body>
+</html>
