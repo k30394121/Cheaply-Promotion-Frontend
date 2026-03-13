@@ -306,7 +306,7 @@ export default function Home() {
             </p>
 
             <div className="big-buttons-grid">
-              <button className="big-button" onClick={() => window.location.href = '/index.html'}>
+              <button className="big-button" onClick={() => window.location.href = '/home.html'}>
                 <div className="big-button-icon">🎮</div>
                 <div className="big-button-title">PROMO GAME</div>
                 <div className="big-button-desc">Start Your Journey</div>
