@@ -26,9 +26,9 @@ When you click "Spin" or "Draw", this frontend simply sends a secure API request
 
 ## 🔗 Official Links
 
-* **Official App** (Hosted via Cloudflare):[https://game.cheaply.click/]
-* **Promotional Website:** [https://promotion.cheaply.click/]
-* **Discord Community:** [https://discord.com/invite/mXnTCtapGF]
+* **Official App:** https://game.cheaply.click/
+* **Promotional Website:** https://promotion.cheaply.click/
+* **Discord Community:** https://discord.com/invite/mXnTCtapGF
 * **X (Twitter):** [@Cheaply147988](https://x.com/Cheaply147988)
 
 ## ⚠️ Security Disclaimer
