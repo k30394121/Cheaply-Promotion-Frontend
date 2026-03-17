@@ -342,25 +342,40 @@ async function spinWheel() {
 }
 
 // 物理動畫
-function runSingleSpin(targetIndex) {
-    return new Promise(resolve => {
-        const anglePerSegment = 360 / segments.length; 
-        const offset = 270 - ((targetIndex * anglePerSegment + anglePerSegment / 2) - 90); 
-        const targetRotation = rotation + (360 * 5) + offset;
-        const startTime = performance.now();
-        const startRot = rotation;
-        function animate(time) {
-            let progress = Math.min((time - startTime) / 6000, 1);
-            rotation = startRot + (targetRotation - startRot) * (1 - Math.pow(1 - progress, 4));
-            document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
-            let mod = ((rotation % 45) + 45) % 45;
-            tickerAngle = mod > 38 ? ((mod - 38) / 7) * -40 : tickerAngle * 0.6;
-            document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(${tickerAngle}deg)`;
-            if (progress < 1) requestAnimationFrame(animate);
-            else { document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(0deg)`; resolve(); }
-        }
-        requestAnimationFrame(animate);
-    });
+function runSingleSpin(targetIndex) { 
+    return new Promise(resolve => { 
+        const anglePerSegment = 360 / segments.length; // 45度 
+ 
+        const targetCenter = targetIndex * anglePerSegment + anglePerSegment / 2; 
+         
+        const currentMod = rotation % 360; 
+        let needed = (270 - targetCenter + 360) % 360; 
+         
+        let delta = needed - currentMod; 
+        if (delta < 0) delta += 360; 
+         
+        const targetRotation = rotation + delta + 360 * 5; 
+ 
+        const startTime = performance.now(); 
+        const startRot = rotation; 
+ 
+        function animate(time) { 
+            let progress = Math.min((time - startTime) / 6000, 1); 
+            rotation = startRot + (targetRotation - startRot) * (1 - Math.pow(1 - progress, 4)); 
+            document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`; 
+            let mod = ((rotation % 45) + 45) % 45; 
+            tickerAngle = mod > 38 ? ((mod - 38) / 7) * -40 : tickerAngle * 0.6; 
+            document.getElementById('wheelTicker').style.transform = `translateX(-50%) 
+rotate(${tickerAngle}deg)`; 
+            if (progress < 1) requestAnimationFrame(animate); 
+            else { 
+                document.getElementById('wheelTicker').style.transform = `translateX(-50%) 
+rotate(0deg)`; 
+                resolve(); 
+            } 
+        } 
+        requestAnimationFrame(animate); 
+    }); 
 }
 
 
@@ -416,7 +431,6 @@ function showModal(isWin, type, amount, usedCards, levelUpBonus) {
         if (usedCards && usedCards.includes('Lucky Star')) descText += " ⭐ 2x Bonus Applied!";
         if (levelUpBonus && levelUpBonus > 0) {
              descText += `\n🚀 LEVEL UP! Fortune Booster: +${levelUpBonus.toLocaleString()} bonus!`;
-             amount += levelUpBonus;
         }
         desc.textContent = descText;
         desc.style.whiteSpace = 'pre-line';
