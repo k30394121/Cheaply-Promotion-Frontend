@@ -343,6 +343,8 @@ async function spinWheel() {
 
 // 物理動畫
 function runSingleSpin(targetIndex) { 
+    console.log('API 給的目標格子:', targetIndex, '應該要停在:', segments[targetIndex].type);
+    
     return new Promise(resolve => { 
         const anglePerSegment = 360 / segments.length; // 45度 
  
