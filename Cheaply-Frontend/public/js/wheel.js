@@ -351,7 +351,7 @@ function runSingleSpin(targetIndex) {
         const targetCenter = targetIndex * anglePerSegment + anglePerSegment / 2; 
          
         const currentMod = rotation % 360; 
-        let needed = (270 - targetCenter + 360) % 360; 
+        let needed = (360 - targetCenter + 360) % 360; 
          
         let delta = needed - currentMod; 
         if (delta < 0) delta += 360; 
@@ -367,12 +367,10 @@ function runSingleSpin(targetIndex) {
             document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`; 
             let mod = ((rotation % 45) + 45) % 45; 
             tickerAngle = mod > 38 ? ((mod - 38) / 7) * -40 : tickerAngle * 0.6; 
-            document.getElementById('wheelTicker').style.transform = `translateX(-50%) 
-rotate(${tickerAngle}deg)`; 
+            document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(${tickerAngle}deg)`; 
             if (progress < 1) requestAnimationFrame(animate); 
             else { 
-                document.getElementById('wheelTicker').style.transform = `translateX(-50%) 
-rotate(0deg)`; 
+                document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(0deg)`; 
                 resolve(); 
             } 
         } 
