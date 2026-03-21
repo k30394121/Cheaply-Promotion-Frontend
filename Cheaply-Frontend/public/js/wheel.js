@@ -30,6 +30,7 @@ const rewardTable = {
     MID: [1500, 7000000, 20000000, 75000000],
     GRAND: 500000000
 };
+let serverRewards = null;
 
 
 // ==========================================
@@ -188,6 +189,7 @@ async function loadUserData() {
                 headers: { 'Authorization': 'Bearer ' + token } 
             });
             const statusData = await statusRes.json();
+            serverRewards = statusData.rewards;
 
             // 抓取詳細使用者資料
             const res = await fetch(`${API_BASE}/user?t=${Date.now()}`, { 
@@ -231,12 +233,18 @@ function updateDisplay() {
     // FIX 2: Update potSmall and potMid with level-appropriate reward values
     const potSmallEl = document.getElementById('potSmall');
     const potMidEl = document.getElementById('potMid');
+    const potGrandEl = document.getElementById('potGrand');
     if (potSmallEl && potMidEl) {
+        const activeRewards = serverRewards || rewardTable;
         const lvIndex = Math.min(userLevel, 4) - 1;
-        const smallVal = rewardTable.SMALL[lvIndex];
-        const midVal = rewardTable.MID[lvIndex];
+        const smallVal = activeRewards.SMALL[lvIndex];
+        const midVal = activeRewards.MID[lvIndex];
         potSmallEl.textContent = smallVal >= 1000000 ? (smallVal / 1000000) + 'M' : (smallVal / 1000) + 'k';
         potMidEl.textContent = midVal >= 1000000 ? (midVal / 1000000) + 'M' : (midVal / 1000) + 'k';
+
+        if (potGrandEl && activeRewards.GRAND) {
+            potGrandEl.textContent = activeRewards.GRAND.toLocaleString(); 
+        }
     }
 
     const promoEl = document.getElementById('promoTokens');
@@ -342,40 +350,50 @@ async function spinWheel() {
 }
 
 // 物理動畫
-function runSingleSpin(targetIndex) { 
-    console.log('API 給的目標格子:', targetIndex, '應該要停在:', segments[targetIndex].type);
-    
-    return new Promise(resolve => { 
-        const anglePerSegment = 360 / segments.length; // 45度 
- 
-        const targetCenter = targetIndex * anglePerSegment + anglePerSegment / 2; 
-         
-        const currentMod = rotation % 360; 
-        let needed = (360 - targetCenter + 360) % 360; 
-         
-        let delta = needed - currentMod; 
-        if (delta < 0) delta += 360; 
-         
-        const targetRotation = rotation + delta + 360 * 5; 
- 
-        const startTime = performance.now(); 
-        const startRot = rotation; 
- 
-        function animate(time) { 
-            let progress = Math.min((time - startTime) / 6000, 1); 
-            rotation = startRot + (targetRotation - startRot) * (1 - Math.pow(1 - progress, 4)); 
-            document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`; 
-            let mod = ((rotation % 45) + 45) % 45; 
-            tickerAngle = mod > 38 ? ((mod - 38) / 7) * -40 : tickerAngle * 0.6; 
-            document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(${tickerAngle}deg)`; 
-            if (progress < 1) requestAnimationFrame(animate); 
-            else { 
-                document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(0deg)`; 
-                resolve(); 
-            } 
-        } 
-        requestAnimationFrame(animate); 
-    }); 
+function runSingleSpin(targetIndex) {
+    return new Promise(resolve => {
+        const anglePerSegment = 360 / 8; // 45度
+
+        // 1. 計算目標格子中心點距離 Index 起點的距離
+        const distFromZeroCenter = (targetIndex * anglePerSegment) + (anglePerSegment / 2);
+
+        // 2. 核心修正：
+        // 因為 Index 0 本來就在頂部，要把 Index N 轉上來，就是「逆時針」旋轉
+        const desiredRotation = -distFromZeroCenter;
+        const currentRotationMod = rotation % 360;
+
+        let delta = (desiredRotation - currentRotationMod) % 360;
+
+        // 確保旋轉方向永遠為一致 (PDF 規範的負數旋轉)
+        if (delta > 0) delta -= 360;
+
+        // 3. 累積旋轉量 = 目前角度 + 偏移量 - (5圈基礎旋轉)
+        const totalDelta = delta - (360 * 5);
+        const targetRotation = rotation + totalDelta;
+
+        const startTime = performance.now();
+        const startRot = rotation;
+
+        function animate(time) {
+            let progress = Math.min((time - startTime) / 6000, 1);
+            const ease = 1 - Math.pow(1 - progress, 4);
+            rotation = startRot + (targetRotation - startRot) * ease;
+
+            document.getElementById('wheel').style.transform = `rotate(${rotation}deg)`;
+
+            // 指針擺動
+            let mod = ((rotation % 45) + 45) % 45;
+            tickerAngle = mod > 38 ? ((mod - 38) / 7) * -40 : tickerAngle * 0.6;
+            document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(${tickerAngle}deg)`;
+
+            if (progress < 1) requestAnimationFrame(animate);
+            else {
+                document.getElementById('wheelTicker').style.transform = `translateX(-50%) rotate(0deg)`;
+                resolve();
+            }
+        }
+        requestAnimationFrame(animate);
+    });
 }
 
 
