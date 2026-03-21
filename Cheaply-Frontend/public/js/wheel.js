@@ -351,6 +351,7 @@ async function spinWheel() {
 
 // 物理動畫
 function runSingleSpin(targetIndex) {
+    console.log("🎯 目標 Index:", targetIndex, "目標類型:", segments[targetIndex].type);
     return new Promise(resolve => {
         const anglePerSegment = 360 / 8; // 45度
 
