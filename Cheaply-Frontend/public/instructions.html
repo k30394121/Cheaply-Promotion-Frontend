@@ -2,208 +2,206 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Instructions - Cheap Tycoon</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructions - Token Tycoon</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Mobile Touch Fixes */
-        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
-        button:active { transform: scale(0.98); }
-    </style>
 </head>
-<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen font-sans">
+<body class="bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 min-h-screen">
     
-    <header class="bg-purple-900/50 backdrop-blur-sm border-b border-purple-600/50 sticky top-0 z-50 shadow-lg">
-        <div class="container mx-auto px-3 md:px-4 py-3 md:py-4">
-            <div class="flex items-center gap-2 md:gap-4">
-                <button onclick="history.back()" class="p-1 md:p-2 rounded-full text-white hover:bg-purple-800/50 transition-colors no-tap-highlight">
-                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Header -->
+    <header class="bg-purple-900/50 backdrop-blur-sm border-b border-purple-600/50 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center gap-4">
+                <button onclick="history.back()" class="text-white hover:text-purple-200 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                 </button>
-                <svg class="w-5 h-5 md:w-6 md:h-6 text-purple-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                 </svg>
-                <h1 class="text-lg md:text-2xl font-bold text-white tracking-wide">Instructions & About</h1>
+                <h1 class="text-2xl font-bold text-white">Instructions & About</h1>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-3 md:px-4 py-6 md:py-8 max-w-4xl">
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
         
-        <div class="bg-gradient-to-br from-purple-800/50 to-purple-900/50 backdrop-blur-sm rounded-2xl md:rounded-3xl p-5 md:p-8 border-2 md:border-4 border-purple-500 shadow-2xl shadow-purple-500/30 mb-6 md:mb-8 text-center">
-            <svg class="w-12 h-12 md:w-16 md:h-16 text-yellow-400 mx-auto mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-br from-purple-800/50 to-purple-900/50 backdrop-blur-sm rounded-2xl p-8 border-4 border-purple-500 shadow-2xl shadow-purple-500/30 mb-8 text-center">
+            <svg class="w-16 h-16 text-yellow-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <h2 class="text-2xl md:text-4xl font-black text-white mb-2 md:mb-3 tracking-tight">How to Play Cheap Tycoon</h2>
-            <p class="text-purple-200 text-sm md:text-lg">
+            <h2 class="text-4xl font-bold text-white mb-3">How to Play Token Tycoon</h2>
+            <p class="text-purple-200 text-lg">
                 Everything you need to know to become a master player
             </p>
         </div>
 
-        <div class="space-y-3 md:space-y-4" id="sections">
-            </div>
+        <!-- Accordion Sections -->
+        <div class="space-y-4" id="sections">
+            <!-- Sections will be inserted here -->
+        </div>
 
-        <div class="mt-8 md:mt-10 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl md:rounded-3xl p-6 md:p-8 text-center shadow-2xl border border-yellow-400/30">
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-2 md:mb-4">Ready to Play?</h3>
-            <p class="text-yellow-100 text-sm md:text-base mb-6">
-                Start your journey to becoming a Cheap Tycoon today!
+        <!-- Quick Start CTA -->
+        <div class="mt-8 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-2xl p-8 text-center shadow-2xl">
+            <h3 class="text-2xl font-bold text-white mb-4">Ready to Play?</h3>
+            <p class="text-yellow-100 mb-6">
+                Start your journey to becoming a Token Tycoon today!
             </p>
-            <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
-                <button onclick="window.location.href='wallet.html'" 
-                        class="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-3 bg-white text-orange-600 text-sm md:text-base font-bold rounded-full md:rounded-xl hover:bg-purple-100 transition-colors shadow-lg no-tap-highlight">
+            <div class="flex gap-4 justify-center flex-wrap">
+                <button onclick="window.location.href='signup.html'" 
+                        class="px-8 py-3 bg-white text-orange-600 font-bold rounded-full hover:bg-purple-100 transition-colors shadow-lg">
                     Connect Wallet & Start
                 </button>
                 <button onclick="window.location.href='wheel.html'" 
-                        class="w-full sm:w-auto px-6 md:px-8 py-3.5 md:py-3 bg-purple-900/50 text-white text-sm md:text-base font-bold rounded-full md:rounded-xl hover:bg-purple-900/70 transition-colors border-2 border-white/30 no-tap-highlight">
+                        class="px-8 py-3 bg-purple-900/50 text-white font-bold rounded-full hover:bg-purple-900/70 transition-colors border-2 border-white/30">
                     Play as Guest
                 </button>
             </div>
         </div>
     </main>
 
-    <script>
+ <script>
         const sections = [
             {
                 id: 'welcome',
                 icon: '📖',
-                title: 'Welcome to Cheap Tycoon',
+                title: 'Welcome to Token Tycoon',
                 color: 'from-purple-600 to-purple-700',
-                content: `Cheap Tycoon is an exciting Web3-powered game where you spin to win tokens, collect rare cards, and compete with players worldwide. Connect your crypto wallet or play as a guest to start your journey to becoming the ultimate Cheap Tycoon!`
+                content: `Token Tycoon is a game designed to let you enjoy the journey of becoming a tycoon, step by step.
+
+                As you play, collect Game Tokens to level up, climb the rankings, and unlock achievements.
+                
+                • **Web2 Gaming:** Earn "Game Tokens" (Web2 points) for rankings and achievements.
+
+                • **Web3 Rewards:** Receive "Promotion Tokens" (Blockchain assets) as Bonus based on your purchases.
+                
+                Buy Game Tokens and get Web3 Rewards!`
             },
             {
                 id: 'getting-started',
                 icon: '🎯',
                 title: 'Getting Started',
                 color: 'from-blue-600 to-blue-700',
-                content: `1. Connect your wallet (MetaMask, Phantom, or Solflare) or play as a guest
-2. You'll receive starter tokens to begin playing
-3. Spin the wheel to win more tokens and unlock cards
-4. Each spin costs 10 tokens and can reward you with random prizes
-5. Collect all cards to complete your collection!`
-            },
-            {
-                id: 'wallet',
-                icon: '💳',
-                title: 'Connecting Your Wallet',
-                color: 'from-green-600 to-green-700',
-                content: `To get the full experience, connect your crypto wallet:
+                content: `Start your journey with these rules:
 
-• Desktop: Click connect and approve in your browser extension
-• Mobile: You'll be redirected to your wallet app to approve
-• Supported wallets: MetaMask (EVM), Phantom (Solana), Solflare (Solana)
+                ** Lucky Spin:**
+                   Uses **Spin Counts**.  Spin the wheel to win **Game Tokens**.
 
-Note: You can play without connecting a wallet, but some features like purchasing tokens with USDC will be unavailable.`
+                ** Card Draw:**
+                   Uses **Draw Counts**.  Draw to get **"Advanced Luck Cards"** for bonus effects.
+
+
+                1. **New Account:** Get **5 Free Spins** and **3 Free Draws** instantly upon registration.
+
+                2. ** Free Spin and Draw:**
+                   • Get **1 Free Spin** and **1 Free Draw** every week.
+                   • **Important:** Must be used within the current week and month. No rollovers to next week and month.
+
+                3. **Referral Bonus:**
+                  Share your unique referral code. 
+                  When others register using your code, **YOU** receive **1 Free "Card Draw"** instantly.`
             },
             {
                 id: 'buying',
                 icon: '🛒',
-                title: 'Buying Tokens',
+                title: 'Buying & Airdrops (Value)',
                 color: 'from-yellow-600 to-orange-600',
-                content: `Purchase tokens using USDC to continue playing:
+                content: `Purchase Game Tokens to upgrade your Level and get Web3 Airdrops.
 
-• 100 Tokens = $1 USDC
-• 550 Tokens = $5 USDC (Hot Sale! 🔥)
-• 1200 Tokens = $10 USDC (Best Value! 💎)
+                **💰 Price Rate:**
+                • **1 Game Token = 0.000025 USDC** 
+                • *(Example: 1 USDC = 40,000 Game Tokens)*
 
-Important: These tokens are for in-game use only and have no real-world monetary value outside the game. Make sure you have USDC in your connected wallet before purchasing.`
+                **🎁 Web3 Airdrop Formula:**
+                For every **1 Game Token** purchased, you get **0.0001 Promotion Token** (Web3).
+                *(Max limit: 5,000 Promotion Tokens per user)* [cite: 20]`
             },
             {
                 id: 'spinning',
-                icon: '🎰',
-                title: 'How to Spin',
+                icon: '🎡',
+                title: 'Wheel Rules',
                 color: 'from-pink-600 to-red-600',
-                content: `The spinning wheel is your main way to earn rewards:
+                content: `The wheel has 8 fixed slots (0-7). One spin costs 1 spin count.
 
-1. Each spin costs 10 tokens
-2. Click the "Spin" button to start
-3. Wait for the wheel to stop
-4. Collect your reward (tokens or cards)
-5. Keep spinning to build your collection!
+                **Prize Slots:**
+                • **GRAND (Slot 4):** **500,000,000 Tokens**. (Limited to 1 winner/month).
+                • **MID (Slot 2, 6):** Medium reward based on Level.
+                • **SMALL (Slot 0, 1):** Small reward based on Level.
+                • **EMPTY (Slot 3, 5, 7):** No prize (Placed near Grand prize for excitement).
+                
+                
+                Wheel Odds & Rules
 
-Tips: The more you spin, the better your chances of unlocking rare cards. Save up tokens for longer play sessions.`
-            },
-            {
-                id: 'cards',
-                icon: '🃏',
-                title: 'Card Collection',
-                color: 'from-purple-600 to-pink-600',
-                content: `Collect cards of different rarities:
-
-• Common - Easy to find, good for beginners
-• Rare - Harder to get, worth collecting
-• Epic - Very rare, prestigious additions
-• Legendary - The rarest cards, ultimate trophies
-
-View your collection in your profile. Click any card to see it in detail. Gray cards are locked - keep playing to unlock them!`
+                    Grand Prize (Slot 4): 500,000,000 Tokens. This is a unique reward limited to 1 winner per month. (Probability: 0 ~ 1 %)
+                    Mid Tier (Slots 2, 6): Medium rewards based on your current level. (Probability: 10 ~ 11 %)
+                    Small Tier (Slots 0, 1): Small rewards based on your current level. (Probability: 40 % )
+                    No Prize (Slots 3, 5, 7): Better luck next time! (Probability: approx. 49 %)`
             },
             {
                 id: 'leaderboard',
                 icon: '🏆',
-                title: 'Leaderboard & Rankings',
+                title: 'Floating Price Lottery',
                 color: 'from-yellow-600 to-yellow-700',
-                content: `Compete with players worldwide:
+                content: ` A lottery ticket with a floating price
 
-• Rankings based on total tokens held
-• Top 3 players get special badges (🏆🥈🥉)
-• Your rank is always visible at the bottom
-• Climb the ranks by accumulating more tokens
-• Check back regularly to see your progress!`
+                The ticket price is fully determined by a special pricing model
+
+                The pricing model depends on changes in the token pool and the passage of time
+
+                A lottery draw is conducted every seven days
+
+                All tokens in the prize pool are awarded to the winning ticket
+
+                The maximum prize per draw is capped at 1 billion tokens
+
+                After each draw, all lottery tickets are burned
+
+                A new lottery round begins after the tickets are destroyed `
             },
             {
-                id: 'swapmeet',
-                icon: '🏢',
-                title: 'SwapMeet - Our Web3 Product',
-                color: 'from-blue-600 to-purple-600',
-                content: `Learn about our serious Web3 development:
+                id: 'cards',
+                icon: '🃏',
+                title: 'Achievement Cards',
+                color: 'from-purple-600 to-pink-600',
+                content: `Unlock cards for massive bonuses:
 
-SwapMeet is our upcoming decentralized exchange (DEX) platform currently under construction. Visit the demo to see:
+                **🏆 Basic Achievement Cards (Auto Unlock):**
+                • **Supporter:** First purchase (Any amount) -> **Get 8,000 Tokens**.
+                • **Collector:** Spin 7 times in a row -> **Get +20,000 Tokens** (on win).
+                • **Token Tycoon:** Hold ≥ **101 Million Tokens** -> **Get +200 Million Tokens**.
 
-• Decentralized token swapping
-• Liquidity pool mechanisms
-• Yield farming opportunities
-• Advanced security features
-
-This demonstrates our team's commitment to building real Web3 solutions. The demo is for reference and preview purposes.`
+                **⚡ Advanced Luck Cards (From Card Draw):**
+                • **Lucky Star:** Double the prize money[cite: 50].
+                • **Double Chance:** Get 2 token draws[cite: 50].
+                • **Fortune Booster:** +10% Token holdings upon Level Up[cite: 50].`
             },
             {
-                id: 'tips',
-                icon: '💡',
-                title: 'Tips & Best Practices',
-                color: 'from-green-600 to-teal-600',
-                content: `Maximize your Cheap Tycoon experience:
+                id: 'wallet',
+                icon: '💳',
+                title: 'Token Info',
+                color: 'from-green-600 to-green-700',
+                content: `Understanding the two token types:
 
-✓ Play regularly to accumulate tokens
-✓ Connect your wallet for the full experience
-✓ Join during special events for bonus rewards
-✓ Complete card sets for achievement badges
-✓ Check the leaderboard to track your progress
-✓ Enable sound effects for a better experience
-✓ Purchase token packages when they're on sale
+                1. **Game Token (Web2):**
+                   • Used for Levels (Lv1-Lv4) and Rankings.
+                   • Cap: Holdings capped at 1 Billion.
 
-Remember: This is a game - play responsibly and have fun!`
+                2. **Promotion Token (Web3):**
+                   • Real blockchain asset.
+                   • Distributed: 45 Million .(Total supply : 50M)
+                   • Obtained via "Buying Game Tokens" bonus.`
             },
             {
                 id: 'support',
                 icon: 'ℹ️',
-                title: 'About & Support',
+                title: 'System & Fairness',
                 color: 'from-gray-600 to-gray-700',
-                content: `Cheap Tycoon is developed by a dedicated team passionate about Web3 gaming and blockchain technology.
-
-Game Version: 1.0.0
-Platform: Multi-chain (EVM & Solana)
-
-For support or questions:
-• Check this instructions page
-• Review our FAQ section
-• Contact our support team
-
-Stay updated:
-• Follow our social media channels
-• Join our community Discord
-• Subscribe to our newsletter
-
-Thank you for playing Cheap Tycoon! 🎰✨`
+                content: `• **Fixed Layout:** The wheel configuration is static to ensure consistency.
+                • **Rich List:** Users with >1.01 Billion tokens are displayed on the Homepage Rich List.
+                • **Version:** v1.0 (Internal Use Only).`
             }
         ];
 
@@ -217,31 +215,56 @@ Thank you for playing Cheap Tycoon! 🎰✨`
         function renderSections() {
             const container = document.getElementById('sections');
             container.innerHTML = sections.map(section => `
-                <div class="bg-gradient-to-br from-purple-800/30 to-purple-900/30 backdrop-blur-sm rounded-xl md:rounded-2xl border-2 md:border-4 border-purple-500 shadow-lg shadow-purple-500/20 overflow-hidden transition-all duration-300">
+                <div class="bg-gradient-to-br from-purple-800/30 to-purple-900/30 backdrop-blur-sm rounded-xl border-4 border-purple-500 shadow-lg shadow-purple-500/20 overflow-hidden transition-all duration-300">
                     <button onclick="toggleSection('${section.id}')" 
-                            class="w-full flex items-center justify-between p-4 md:p-6 hover:bg-purple-700/20 transition-colors no-tap-highlight">
-                        <div class="flex items-center gap-3 md:gap-4 text-left">
-                            <div class="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-lg md:rounded-xl bg-gradient-to-br ${section.color} flex items-center justify-center text-white text-xl md:text-2xl shadow-inner">
+                            class="w-full flex items-center justify-between p-6 hover:bg-purple-700/20 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br ${section.color} flex items-center justify-center text-white text-2xl">
                                 ${section.icon}
                             </div>
-                            <h3 class="text-base md:text-xl font-bold text-white">${section.title}</h3>
+                            <h3 class="text-xl font-bold text-white text-left">${section.title}</h3>
                         </div>
-                        <div class="text-purple-300 shrink-0 ml-2">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 ${expandedSection === section.id ? 'rotate-180' : ''} transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="text-purple-300">
+                            <svg class="w-6 h-6 ${expandedSection === section.id ? 'rotate-180' : ''} transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </div>
                     </button>
 
                     ${expandedSection === section.id ? `
-                        <div class="px-4 pb-4 md:px-6 md:pb-6 animate-[fadeIn_0.2s_ease-out]">
-                            <div class="bg-purple-950/50 rounded-lg md:rounded-xl p-4 md:p-6 border border-purple-500/50 shadow-inner">
-                                <p class="text-purple-100 text-sm md:text-base whitespace-pre-line leading-relaxed">${section.content}</p>
+                        <div class="px-6 pb-6">
+                            <div class="bg-purple-900/30 rounded-lg p-6 border-2 border-purple-500">
+                                <div class="text-purple-100 whitespace-pre-line leading-relaxed markdown-body">
+                                    ${parseMarkdown(section.content)}
+                                </div>
                             </div>
                         </div>
                     ` : ''}
                 </div>
             `).join('');
+        }
+
+        // Simple Markdown parser to handle bold text and tables in the content
+        function parseMarkdown(text) {
+            let html = text
+                // Handle Bold **text**
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Handle bullet points
+                .replace(/• (.*?)(?:\n|$)/g, '<li class="ml-4 list-disc">$1</li>')
+                // Handle Table (Very basic implementation for the Level table)
+                .replace(/\| (.*?) \|/g, (match, content) => {
+                    const cells = content.split('|').map(cell => `<td class="p-2 border border-purple-500/50">${cell.trim()}</td>`).join('');
+                    return `<tr>${cells}</tr>`;
+                });
+
+            // Wrap table rows in table tags if table syntax exists
+            if (html.includes('<tr>')) {
+                html = html.replace(/((?:<tr>.*?<\/tr>\s*)+)/g, '<table class="w-full text-sm my-4 border-collapse">$1</table>');
+                // Fix header row style
+                html = html.replace(/<tr>(.*?)<\/tr>/, '<tr class="bg-purple-800/50 font-bold">$1</tr>');
+            }
+            
+            return html;
         }
 
         // Initialize
