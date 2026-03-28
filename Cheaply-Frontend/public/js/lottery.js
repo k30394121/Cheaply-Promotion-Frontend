@@ -140,18 +140,33 @@ async function checkMyPosition() {
             cardArea.classList.remove('hidden');
 
             const isUp = p.direction === 'UP';
-            document.getElementById('posDirection').textContent = isUp ? 'HIGHER' : 'LOWER';
+                document.getElementById('posDirection').textContent = isUp ? 'HIGHER' : 'LOWER';
             document.getElementById('posIcon').textContent = isUp ? '🐂' : '🐻';
             
-            const amountDisplay = document.getElementById('posAmount');
+            // ✨ 1. 穩定顯示玩家的下注金額
+            document.getElementById('posWager').textContent = p.amount.toLocaleString(); 
+            
+             // ✨ 2. 控制右側的狀態與按鈕區
+            const actionArea = document.getElementById('posActionArea');
             const bg = document.getElementById('posBg');
 
-            if (p.status === 'WIN') {
-                amountDisplay.innerHTML = `<button onclick="claimReward()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-black px-4 py-1 rounded-lg animate-pulse shadow-[0_0_15px_#facc15] transition-all">CLAIM 💰</button>`;
+            if (p.status === 'WIN' || p.status === 'won' || p.status === 'claimable') {
+                // 贏了：顯示超顯眼的 CLAIM 按鈕
+                actionArea.innerHTML = `<button onclick="claimReward()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-black px-4 py-2 rounded-lg animate-pulse shadow-[0_0_15px_#facc15] transition-all no-tap-highlight">CLAIM 💰</button>`;
                 bg.className = 'absolute inset-0 opacity-50 bg-yellow-600 animate-pulse';
+            } else if (p.status === 'PENDING') {
+                // 等待中：畫出帶有 data-end 的倒數計時器
+                actionArea.innerHTML = `
+                    <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase mb-1">Settles In</p>
+                    <div class="timer text-yellow-400 font-mono text-xl md:text-2xl animate-pulse" data-end="${p.endTime}">
+                        --m --s
+                    </div>
+                `;
+                bg.className = 'absolute inset-0 opacity-20 bg-blue-500';
             } else {
-                amountDisplay.textContent = p.amount.toLocaleString() + ' TKN';
-                bg.className = isUp ? 'absolute inset-0 opacity-20 bg-green-500' : 'absolute inset-0 opacity-20 bg-red-500';
+                // LOSS 的狀況：顯示紅色 LOSS
+                actionArea.innerHTML = `<span class="text-red-400 font-black text-xl">LOSS</span>`;
+                 bg.className = 'absolute inset-0 opacity-20 bg-red-900';
             }
         } else {
             inputArea.classList.remove('hidden');
@@ -423,8 +438,8 @@ async function placePrediction(direction) {
         if (r.success) {
             data.tokens = r.newBalance;
             updateUI();
-            addActivePosition(direction, amt, selectedDuration, payoutValue);
             document.getElementById('predictionAmount').value = '';
+            await checkMyPosition();
         } else {
             alert(r.error);
         }
@@ -437,28 +452,6 @@ async function placePrediction(direction) {
     }
 }
 
-function addActivePosition(dir, amt, dur, payout) {
-    const container = document.getElementById('activePositions');
-    const endTime = Date.now() + dur;
-    const id = 'pos-' + Date.now();
-    
-    const html = `
-        <div id="${id}" class="bg-slate-800 border border-slate-700 p-4 rounded-xl flex justify-between items-center animate-modal mb-2">
-            <div class="flex items-center gap-3">
-                <div class="bg-slate-900 p-2 rounded-lg text-2xl">${dir === 'UP' ? '🐂' : '🐻'}</div>
-                <div>
-                    <div class="text-xs text-gray-400 font-bold uppercase">${dir} | ${payout}% Payout</div>
-                    <div class="text-white font-bold">${amt.toLocaleString()} TKN</div>
-                </div>
-            </div>
-            <div class="text-right">
-                <div class="text-[10px] text-gray-500 uppercase">Ends In</div>
-                <div class="text-yellow-400 font-mono font-bold timer" data-end="${endTime}">Calculating...</div>
-            </div>
-        </div>
-    `;
-    container.insertAdjacentHTML('afterbegin', html);
-}
 
 // ===========================================
 // ⏱️ 計時器邏輯
@@ -522,6 +515,7 @@ function startSeasonTimer(targetTime, serverTime) {
 
 function updateTimers() {
     document.querySelectorAll('.timer').forEach(el => {
+        // 從 DOM 取得結束時間
         const end = parseInt(el.getAttribute('data-end'));
         const diff = end - Date.now();
         
@@ -529,15 +523,16 @@ function updateTimers() {
             el.textContent = "Settling...";
             el.classList.add('text-yellow-400', 'animate-pulse');
             
-            if (diff > -2000 && diff < -1000) {
+            // ✨ 終極解法：用一個標記 (dataset) 來確保必定觸發，且只觸發一次！
+            // 只要還沒打過 API，就算 diff 已經掉到 -50000，它也一定會進來執行
+            if (!el.dataset.settlingFetched) {
+                el.dataset.settlingFetched = "true"; // 標記為「已呼叫過」，防止每秒重複打 API
+                
                 checkMyPosition();
                 fetchHistory();
             }
-            if(diff < -10000) {
-                const row = el.closest('div[id^="pos-"]');
-                if(row) row.remove();
-            }
         } else {
+            // 還沒到期，正常顯示倒數
             const h = Math.floor(diff / 3600000);
             const m = Math.floor((diff % 3600000) / 60000);
             const s = Math.floor((diff % 60000) / 1000);
