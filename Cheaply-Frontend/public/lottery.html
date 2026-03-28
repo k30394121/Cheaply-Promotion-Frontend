@@ -231,7 +231,24 @@
                             <p class="text-[10px] md:text-xs text-gray-300">Wager: <span id="posWager" class="font-bold text-white text-sm">0</span> TKN</p>
                         </div>
                         <div class="text-right flex flex-col items-end justify-center min-w-[80px]" id="posActionArea">
+                            
+                            <!-- 倒數計時區（PENDING 時顯示） -->
+                            <div id="posTimerArea" class="hidden text-right">
+                                <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Settles In</p>
+                                <div id="posTimer" class="timer text-yellow-400 font-mono font-black text-lg md:text-2xl" data-end="0">--:--</div>
                             </div>
+
+                            <!-- CLAIM 按鈕（WIN 時顯示） -->
+                            <div id="posClaimArea" class="hidden">
+                                <button onclick="claimReward()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-black px-4 py-2 rounded-lg animate-pulse shadow-[0_0_15px_#facc15] transition-all no-tap-highlight">CLAIM 💰</button>
+                            </div>
+
+                            <!-- LOSS 文字（LOSS 時顯示） -->
+                            <div id="posLossArea" class="hidden">
+                                <span class="text-red-400 font-black text-xl">LOSS</span>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 
