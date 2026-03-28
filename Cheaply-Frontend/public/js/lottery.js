@@ -157,12 +157,17 @@ async function checkMyPosition() {
                 if (actionArea) actionArea.innerHTML = `<button onclick="claimReward()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-black px-4 py-2 rounded-lg animate-pulse shadow-[0_0_15px_#facc15] transition-all no-tap-highlight">CLAIM 💰</button>`;
                 if (bg) bg.className = 'absolute inset-0 opacity-50 bg-yellow-600 animate-pulse';
             } else if (p.status === 'PENDING') {
-                if (actionArea) actionArea.innerHTML = `
-                    <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase mb-1">Settles In</p>
-                    <div class="timer text-yellow-400 font-mono text-xl md:text-2xl animate-pulse" data-end="${p.endTime}">
-                        --m --s
-                    </div>
-                `;
+                const timerArea = document.getElementById('posTimerArea');
+                const timerEl = document.getElementById('posTimer');
+                document.getElementById('posClaimArea').classList.add('hidden');
+                document.getElementById('posLossArea').classList.add('hidden');
+                if (timerArea && timerEl) {
+                    timerArea.classList.remove('hidden');
+                    // 只在 data-end 還沒設定的時候才設定，避免重複覆蓋
+                    if (timerEl.getAttribute('data-end') === '0') {
+                        timerEl.setAttribute('data-end', p.endTime);
+                    }
+                }
                 if (bg) bg.className = 'absolute inset-0 opacity-20 bg-blue-500';
             } else {
                 if (actionArea) actionArea.innerHTML = `<span class="text-red-400 font-black text-xl">LOSS</span>`;
