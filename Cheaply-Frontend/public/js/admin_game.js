@@ -491,22 +491,75 @@ function switchTab(tabName) {
     document.getElementById('pageTitle').textContent = titles[tabName];
 }
 
-function downloadCSV() {
-    const data = [
-        ['ID', 'Name', 'Wallet', 'Level', 'Held Tokens', 'Total Spent'],
-        ['1001', 'CryptoMaster', '0x8a7f...3f2z', 'Lv2', '15430', '150'],
-        ['1002', 'DegenKing', '0x3b2c...9a1x', 'Lv4', '105000000', '5200']
-    ];
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
-    data.forEach(row => csvContent += row.join(",") + "\r\n");
-    const link = document.createElement("a");
-    link.href = encodeURI(csvContent);
-    link.download = "token_tycoon_data.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+async function downloadCSV() {
+    const btn = document.querySelector('button[onclick="downloadCSV()"]');
+    const originalText = btn.innerHTML;
+    
+    // 讓按鈕顯示載入中，防止連點
+    if (btn) {
+        btn.innerHTML = '⏳ 處理中...';
+        btn.disabled = true;
+    }
 
+    try {
+        // 1. 向後端請求真實的用戶資料
+        const res = await fetch(`${ROOT_URL}/admin/users`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+            }
+        });
+
+        checkAuthStatus(res);
+        const users = await res.json();
+
+        if (users.length === 0) {
+            alert("目前沒有用戶資料可供匯出。");
+            throw new Error("No data");
+        }
+
+        // 2. 準備 CSV 標頭
+        let csvContent = "編號(ID),姓名/暱稱,Email,錢包地址,等級,持有代幣(Tokens),購買總額(USDT)\n";
+
+        // 3. 將真實資料塞入每一行 (對齊 loadUsers 的變數)
+        users.forEach((u, index) => {
+            const id = index + 1; 
+            const name = escapeHtml(u.username) || 'Unknown';
+            const email = escapeHtml(u.email) || '無';
+            const wallet = u.walletAddress || '未連結';
+            const level = u.level || 1;
+            const tokens = u.gameTokens || 0;
+            const totalSpent = u.totalSpent || 0;
+
+            // 用雙引號包住變數，避免暱稱裡有「逗號」破壞 CSV 格式
+            csvContent += `"${id}","${name}","${email}","${wallet}","Lv${level}","${tokens}","${totalSpent}"\n`;
+        });
+
+        // 4. 加入 BOM 解決 Excel 繁體中文亂碼，並觸發下載
+        const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        // 檔名加上今天的日期
+        link.setAttribute("download", `CheapTycoon_Users_${new Date().toISOString().split('T')[0]}.csv`);
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } catch (error) {
+        if(error.message !== "Authentication Failed" && error.message !== "No data") {
+            console.error("CSV Export Error:", error);
+            alert("匯出失敗，請確認連線狀態！");
+        }
+    } finally {
+        // 恢復按鈕狀態
+        if (btn) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+}
 function handleAdminLogout() {
     if(confirm("確定要登出管理系統嗎？")) {
         localStorage.removeItem('admin_token');
