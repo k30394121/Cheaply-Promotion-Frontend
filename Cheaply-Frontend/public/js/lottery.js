@@ -126,13 +126,15 @@ async function fetchHistory() {
 
 async function checkMyPosition() {
     try {
+        // ✅ Claude 的神來一筆：先抓 DOM，沒有就直接中斷，省下一次多餘的 API 請求！
+        const inputArea = document.getElementById('predictionInputArea');
+        const cardArea = document.getElementById('myPositionCard');
+        if (!inputArea || !cardArea) return;
+
         const res = await fetch(`${API_BASE}/lottery/predict/my`, {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
         const r = await res.json();
-        
-        const inputArea = document.getElementById('predictionInputArea');
-        const cardArea = document.getElementById('myPositionCard');
 
         if (r.hasPosition && r.data) {
             const p = r.data;
@@ -140,39 +142,39 @@ async function checkMyPosition() {
             cardArea.classList.remove('hidden');
 
             const isUp = p.direction === 'UP';
-                document.getElementById('posDirection').textContent = isUp ? 'HIGHER' : 'LOWER';
+            document.getElementById('posDirection').textContent = isUp ? 'HIGHER' : 'LOWER';
             document.getElementById('posIcon').textContent = isUp ? '🐂' : '🐻';
-            
-            // ✨ 1. 穩定顯示玩家的下注金額
-            document.getElementById('posWager').textContent = p.amount.toLocaleString(); 
-            
-             // ✨ 2. 控制右側的狀態與按鈕區
+
+            // ✨ 精準寫入下注金額到新的 posWager
+            const wagerEl = document.getElementById('posWager');
+            if (wagerEl) wagerEl.textContent = p.amount.toLocaleString();
+
+            // ✨ 控制右側的狀態與按鈕區 (對齊 posActionArea)
             const actionArea = document.getElementById('posActionArea');
             const bg = document.getElementById('posBg');
 
             if (p.status === 'WIN' || p.status === 'won' || p.status === 'claimable') {
-                // 贏了：顯示超顯眼的 CLAIM 按鈕
-                actionArea.innerHTML = `<button onclick="claimReward()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-black px-4 py-2 rounded-lg animate-pulse shadow-[0_0_15px_#facc15] transition-all no-tap-highlight">CLAIM 💰</button>`;
-                bg.className = 'absolute inset-0 opacity-50 bg-yellow-600 animate-pulse';
+                if (actionArea) actionArea.innerHTML = `<button onclick="claimReward()" class="bg-yellow-400 hover:bg-yellow-300 text-black font-black px-4 py-2 rounded-lg animate-pulse shadow-[0_0_15px_#facc15] transition-all no-tap-highlight">CLAIM 💰</button>`;
+                if (bg) bg.className = 'absolute inset-0 opacity-50 bg-yellow-600 animate-pulse';
             } else if (p.status === 'PENDING') {
-                // 等待中：畫出帶有 data-end 的倒數計時器
-                actionArea.innerHTML = `
+                if (actionArea) actionArea.innerHTML = `
                     <p class="text-[10px] md:text-xs text-gray-400 font-bold uppercase mb-1">Settles In</p>
                     <div class="timer text-yellow-400 font-mono text-xl md:text-2xl animate-pulse" data-end="${p.endTime}">
                         --m --s
                     </div>
                 `;
-                bg.className = 'absolute inset-0 opacity-20 bg-blue-500';
+                if (bg) bg.className = 'absolute inset-0 opacity-20 bg-blue-500';
             } else {
-                // LOSS 的狀況：顯示紅色 LOSS
-                actionArea.innerHTML = `<span class="text-red-400 font-black text-xl">LOSS</span>`;
-                 bg.className = 'absolute inset-0 opacity-20 bg-red-900';
+                if (actionArea) actionArea.innerHTML = `<span class="text-red-400 font-black text-xl">LOSS</span>`;
+                if (bg) bg.className = 'absolute inset-0 opacity-20 bg-red-900';
             }
         } else {
             inputArea.classList.remove('hidden');
             cardArea.classList.add('hidden');
         }
-    } catch (e) { console.error("Check position error", e); }
+    } catch (e) {
+        console.error("Check position error", e);
+    }
 }
 
 // ===========================================
