@@ -64,6 +64,7 @@ async function updateHeaderStatus() {
             const res = await fetch(`${API_BASE}/mail?t=${Date.now()}`, { 
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } 
             });
+            if (response.status === 401 || response.status === 403) return handleSessionExpired();
             if(res.ok) {
                 const msgs = await res.json();
                 unreadCount = msgs.filter(m => !m.read).length;
@@ -188,6 +189,7 @@ async function loadUserData() {
             const statusRes = await fetch(`${API_BASE}/wheel/status`, { 
                 headers: { 'Authorization': 'Bearer ' + token } 
             });
+            if (statusRes.status === 401 || statusRes.status === 403) return handleSessionExpired();
             const statusData = await statusRes.json();
             serverRewards = statusData.rewards;
 
@@ -195,6 +197,7 @@ async function loadUserData() {
             const res = await fetch(`${API_BASE}/user?t=${Date.now()}`, { 
                 headers: { 'Authorization': 'Bearer ' + token } 
             });
+            if (res.status === 401 || res.status === 403) return handleSessionExpired();
             const data = await res.json();
             
             gameTokens = data.gameTokens || 0;
@@ -299,6 +302,7 @@ async function spinWheel() {
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
                 body: JSON.stringify({ activeCards: selectedCards })
             });
+            if (response.status === 401 || response.status === 403) return handleSessionExpired();
             const result = await response.json();
             
             const sequence = result.spinSequence || [result.targetIndex !== undefined ? result.targetIndex : result.finalTargetIndex];
@@ -498,6 +502,13 @@ function renderPowerups() {
         }
     });
     c.innerHTML = has ? h : '<p class="text-purple-400/30 text-xs italic">Get power-up cards from Gacha!</p>';
+}
+
+function handleSessionExpired() {
+    alert("Session expired! Please log in again.");
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    window.location.replace('login.html');
 }
 
 

@@ -61,6 +61,7 @@ async function init() {
 async function fetchUserData() {
     try {
         const res = await fetch(`${API_BASE}/user`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
+        if (res.status === 401 || res.status === 403) return handleSessionExpired();
         const u = await res.json(); data.tokens = u.gameTokens;
         
         const resH = await fetch(`${API_BASE}/lottery/holdings`, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') } });
@@ -126,7 +127,6 @@ async function fetchHistory() {
 
 async function checkMyPosition() {
     try {
-        // ✅ Claude 的神來一筆：先抓 DOM，沒有就直接中斷，省下一次多餘的 API 請求！
         const inputArea = document.getElementById('predictionInputArea');
         const cardArea = document.getElementById('myPositionCard');
         if (!inputArea || !cardArea) return;
@@ -134,6 +134,7 @@ async function checkMyPosition() {
         const res = await fetch(`${API_BASE}/lottery/predict/my`, {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         });
+        if (res.status === 401 || res.status === 403) return handleSessionExpired();
         const r = await res.json();
 
         if (r.hasPosition && r.data) {
@@ -598,6 +599,7 @@ async function updateHeaderStatus() {
             const res = await fetch(`${API_BASE}/mail?t=${Date.now()}`, {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
             });
+            if (res.status === 401 || res.status === 403) return handleSessionExpired();
             if(res.ok) {
                 const msgs = await res.json();
                 unreadCount = msgs.filter(m => !m.read).length;
@@ -777,6 +779,13 @@ function confirmSkip(e) {
     document.getElementById('skipModal').classList.add('hidden');
     localStorage.setItem('lottery_tutorial_seen', 'true');
     // 不需要再呼叫 destroy，因為前面已經徹底銷毀過了
+}
+
+function handleSessionExpired() {
+    alert("Session expired! Please log in again.");
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    window.location.replace('login.html');
 }
 
 
