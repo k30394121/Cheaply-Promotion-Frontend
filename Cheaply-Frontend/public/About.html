@@ -1,530 +1,599 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Core Mechanics - Cheaply</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --dark-bg: #0a0e27;
-            --darker-bg: #060a1f;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: #a0aec0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Mechanics - Cheaply</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --dark-bg: #0a0e27;
+      --darker-bg: #060a1f;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-primary: #ffffff;
+      --text-secondary: #a0aec0;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body, html {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+    body, html {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-        /* Professional Grid Background */
-        .grid-background {
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 1;
-        }
+    /* Professional Grid Background */
+    .grid-background {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-        .gradient-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 2;
-        }
+    .gradient-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 2;
+    }
 
-        .orb-1 {
-            top: -10%;
-            right: -10%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, #4f46e5, transparent 70%);
-        }
+    .orb-1 {
+      top: -10%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, #4f46e5, transparent 70%);
+    }
 
-        .orb-2 {
-            bottom: -15%;
-            left: -10%;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, #7c3aed, transparent 70%);
-        }
+    .orb-2 {
+      bottom: -15%;
+      left: -10%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, #7c3aed, transparent 70%);
+    }
 
-        /* Navigation */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px; /* Slightly shorter on mobile */
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-            background: rgba(10, 14, 39, 0.95);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      z-index: 1000;
+      backdrop-filter: blur(20px);
+      background: rgba(10, 14, 39, 0.95);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--primary-gradient);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 18px;
-            letter-spacing: -0.5px;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
-        }
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--primary-gradient);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
 
-        .logo-text {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
 
-        .back-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            letter-spacing: 0.3px;
-        }
+    .back-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(10px);
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.3px;
+    }
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateX(-3px);
-        }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(-3px);
+    }
 
-        /* Hero Section */
-        .hero-section {
-            padding: 100px 20px 60px;
-            position: relative;
-            z-index: 10;
-        }
+    /* Hero Section */
+    .hero-section {
+      padding: 120px 24px 80px;
+      position: relative;
+      z-index: 10;
+    }
 
-        .hero-title {
-            font-size: clamp(2.5rem, 8vw, 5rem);
-            font-weight: 800;
-            margin-bottom: 20px;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.1;
-        }
+    .hero-title {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
-        .hero-subtitle {
-            font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-            font-weight: 300;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto;
-        }
+    .hero-subtitle {
+      font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+    }
 
-        .highlight-blue {
-            color: #818cf8;
-            font-weight: 600;
-        }
+    .highlight-blue {
+      color: #818cf8;
+      font-weight: 600;
+    }
 
-        .highlight-purple {
-            color: #c084fc;
-            font-weight: 600;
-        }
+    .highlight-purple {
+      color: #c084fc;
+      font-weight: 600;
+    }
 
-        /* Section Headers */
-        .section-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+    /* Section Headers */
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
 
-        .section-title {
-            font-size: clamp(1.75rem, 4vw, 2.5rem);
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            letter-spacing: -1px;
-        }
+    .section-title {
+      font-size: clamp(1.875rem, 4vw, 2.5rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
 
-        .section-subtitle {
-            font-size: 0.9375rem;
-            color: var(--text-secondary);
-            padding: 0 1rem;
-        }
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
 
-        /* Content Cards */
-        .content-card {
-            background: var(--card-bg);
-            border: 1.5px solid var(--border-color);
-            border-radius: 20px;
-            padding: clamp(1.5rem, 4vw, 2.5rem);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    /* Content Cards */
+    .content-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      border-radius: 24px;
+      padding: clamp(2rem, 4vw, 2.5rem);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        .content-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    .content-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-        @media (hover: hover) {
-            .content-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-            }
-            .content-card:hover::before {
-                opacity: 1;
-            }
-        }
+    .content-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
 
-        /* Border Accents */
-        .border-accent-blue { border-left: 4px solid #667eea; }
-        .border-accent-blue::before { background: radial-gradient(circle, rgba(102, 126, 234, 0.15), transparent 70%); }
-        .border-accent-pink { border-left: 4px solid #f093fb; }
-        .border-accent-pink::before { background: radial-gradient(circle, rgba(240, 147, 251, 0.15), transparent 70%); }
-        .border-accent-green { border-left: 4px solid #34d399; }
-        .border-accent-green::before { background: radial-gradient(circle, rgba(52, 211, 153, 0.15), transparent 70%); }
-        .border-accent-purple { border-left: 4px solid #a78bfa; }
-        .border-accent-purple::before { background: radial-gradient(circle, rgba(167, 139, 250, 0.15), transparent 70%); }
+    .content-card:hover::before {
+      opacity: 1;
+    }
 
-        /* Section Icons */
-        .section-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-            transition: transform 0.3s ease;
-            animation: float 3s ease-in-out infinite;
-        }
+    /* Border Accents */
+    .border-accent-blue {
+      border-left: 4px solid #667eea;
+    }
 
-        .content-card:hover .section-icon {
-            transform: scale(1.1);
-        }
+    .border-accent-blue::before {
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.15), transparent 70%);
+    }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
+    .border-accent-pink {
+      border-left: 4px solid #f093fb;
+    }
 
-        .icon-blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3); }
-        .icon-pink { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3); }
-        .icon-green { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: white; box-shadow: 0 8px 20px rgba(52, 211, 153, 0.3); }
-        .icon-purple { background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); color: white; box-shadow: 0 8px 20px rgba(167, 139, 250, 0.3); }
+    .border-accent-pink::before {
+      background: radial-gradient(circle, rgba(240, 147, 251, 0.15), transparent 70%);
+    }
 
-        /* Card Title */
-        .card-title {
-            font-size: clamp(1.5rem, 3vw, 2.25rem);
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            letter-spacing: -0.5px;
-            position: relative;
-            z-index: 1;
-        }
+    .border-accent-green {
+      border-left: 4px solid #34d399;
+    }
 
-        /* Badge */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 24px;
-            position: relative;
-            z-index: 1;
-        }
+    .border-accent-green::before {
+      background: radial-gradient(circle, rgba(52, 211, 153, 0.15), transparent 70%);
+    }
 
-        .badge-blue { background: rgba(102, 126, 234, 0.15); color: #818cf8; border: 1px solid rgba(102, 126, 234, 0.3); }
-        .badge-pink { background: rgba(240, 147, 251, 0.15); color: #f0a3fb; border: 1px solid rgba(240, 147, 251, 0.3); }
-        .badge-green { background: rgba(52, 211, 153, 0.15); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.3); }
-        .badge-purple { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; border: 1px solid rgba(167, 139, 250, 0.3); }
+    .border-accent-purple {
+      border-left: 4px solid #a78bfa;
+    }
 
-        /* Content Sections */
-        .content-section {
-            position: relative;
-            z-index: 1;
-            margin-bottom: 28px;
-        }
+    .border-accent-purple::before {
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.15), transparent 70%);
+    }
 
-        .content-section-title {
-            font-size: 1.0625rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            position: relative;
-            z-index: 1;
-        }
+    /* Section Icons */
+    .section-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.3s ease;
+      animation: float 3s ease-in-out infinite;
+    }
 
-        .content-section-text {
-            font-size: 0.875rem;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            padding-left: 26px;
-            position: relative;
-            z-index: 1;
-        }
+    .content-card:hover .section-icon {
+      transform: scale(1.1);
+    }
 
-        .content-list {
-            list-style: none;
-            padding-left: 26px;
-            position: relative;
-            z-index: 1;
-        }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
 
-        .content-list li {
-            font-size: 0.875rem;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
+    .icon-blue {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
 
-        .list-bullet {
-            font-weight: 700;
-            font-size: 1rem;
-            line-height: 1.6;
-            flex-shrink: 0;
-        }
+    .icon-pink {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(240, 147, 251, 0.3);
+    }
 
-        /* Connection Card */
-        .connection-card {
-            background: var(--card-bg);
-            border: 1.5px solid var(--border-color);
-            border-radius: 20px;
-            padding: clamp(1.5rem, 5vw, 3rem);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            margin-top: 48px;
-        }
+    .icon-green {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(52, 211, 153, 0.3);
+    }
 
-        .connection-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.1), transparent 70%);
-            border-radius: 50%;
-        }
+    .icon-purple {
+      background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+      color: white;
+      box-shadow: 0 8px 20px rgba(167, 139, 250, 0.3);
+    }
 
-        .connection-title {
-            font-size: clamp(1.25rem, 3vw, 2rem);
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            letter-spacing: -0.5px;
-            position: relative;
-            z-index: 1;
-        }
+    /* Card Title */
+    .card-title {
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+      position: relative;
+      z-index: 1;
+    }
 
-        .connection-text {
-            max-width: 900px;
-            margin: 0 auto;
-            color: var(--text-secondary);
-            line-height: 1.7;
-            font-size: 0.9375rem;
-            position: relative;
-            z-index: 1;
-        }
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
 
-        .connection-text p { margin-bottom: 16px; }
+    .badge-blue {
+      background: rgba(102, 126, 234, 0.15);
+      color: #818cf8;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
 
-        .connection-example {
-            font-size: 0.8125rem;
-            color: #718096;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 16px;
-            text-align: left;
-        }
+    .badge-pink {
+      background: rgba(240, 147, 251, 0.15);
+      color: #f0a3fb;
+      border: 1px solid rgba(240, 147, 251, 0.3);
+    }
 
-        .text-highlight-green { color: #6ee7b7; font-weight: 600; }
-        .text-highlight-blue { color: #818cf8; font-weight: 600; }
-        .text-highlight-purple { color: #c4b5fd; font-weight: 600; }
-        .text-highlight-pink { color: #f0a3fb; font-weight: 600; }
+    .badge-green {
+      background: rgba(52, 211, 153, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+    }
 
-        /* Footer */
-        footer {
-            position: relative;
-            z-index: 10;
-            background: var(--darker-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 40px 20px;
-        }
+    .badge-purple {
+      background: rgba(167, 139, 250, 0.15);
+      color: #c4b5fd;
+      border: 1px solid rgba(167, 139, 250, 0.3);
+    }
 
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
+    /* Content Sections */
+    .content-section {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 32px;
+    }
 
-        .footer-logo-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--primary-gradient);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 14px;
-        }
+    .content-section-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 1;
+    }
 
-        .footer-link {
-            color: #818cf8;
-            transition: color 0.3s ease;
-            text-decoration: none;
-            font-size: 0.875rem;
-        }
+    .content-section-text {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      padding-left: 28px;
+      position: relative;
+      z-index: 1;
+    }
 
-        .footer-link:hover { color: #a5b4fc; }
+    .content-list {
+      list-style: none;
+      padding-left: 28px;
+      position: relative;
+      z-index: 1;
+    }
 
-        /* Responsive Defaults */
-        @media (min-width: 768px) {
-            .navbar { height: 80px; }
-            .logo-icon { width: 42px; height: 42px; font-size: 20px; border-radius: 10px;}
-            .logo-text { font-size: 22px; }
-            .back-btn { padding: 10px 20px; font-size: 14px; }
-            .hero-section { padding: 140px 24px 80px; }
-            .section-icon { width: 64px; height: 64px; font-size: 28px; border-radius: 16px; }
-            .badge { font-size: 0.875rem; padding: 8px 16px; }
-            .content-section-text { font-size: 0.9375rem; padding-left: 28px; }
-            .content-list li { font-size: 0.9375rem; }
-            .connection-example { font-size: 0.875rem; text-align: center; }
-            footer { padding: 48px 24px; }
-        }
+    .content-list li {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
-        .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
-    </style>
+    .list-bullet {
+      font-weight: 700;
+      font-size: 1.125rem;
+      line-height: 1.7;
+      flex-shrink: 0;
+    }
+
+    /* Connection Card */
+    .connection-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border-color);
+      border-radius: 24px;
+      padding: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      margin-top: 64px;
+    }
+
+    .connection-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.1), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .connection-title {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      letter-spacing: -0.5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .connection-text {
+      max-width: 900px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .connection-text p {
+      margin-bottom: 16px;
+    }
+
+    .connection-example {
+      font-size: 0.875rem;
+      color: #718096;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-top: 16px;
+    }
+
+    .text-highlight-green { color: #6ee7b7; font-weight: 600; }
+    .text-highlight-blue { color: #818cf8; font-weight: 600; }
+    .text-highlight-purple { color: #c4b5fd; font-weight: 600; }
+    .text-highlight-pink { color: #f0a3fb; font-weight: 600; }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 10;
+      background: var(--darker-bg);
+      border-top: 1px solid var(--border-color);
+      padding: 48px 24px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .footer-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary-gradient);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .footer-link {
+      color: #818cf8;
+      transition: color 0.3s ease;
+      text-decoration: none;
+    }
+
+    .footer-link:hover {
+      color: #a5b4fc;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .content-card {
+        padding: 1.5rem;
+      }
+
+      .section-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+      }
+
+      .connection-card {
+        padding: 2rem 1.5rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+  </style>
 </head>
 <body>
   
+  <!-- Background Elements -->
   <div class="grid-background"></div>
   <div class="gradient-orb orb-1"></div>
   <div class="gradient-orb orb-2"></div>
 
+  <!-- Navigation -->
   <nav class="navbar">
-    <div class="w-full max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center h-full">
+    <div class="w-full max-w-7xl mx-auto px-6 flex justify-between items-center h-full">
       
       <div class="logo-container">
         <div class="logo-icon">C</div>
         <span class="logo-text">Cheaply</span>
       </div>
 
-      <a href="/" class="back-btn no-tap-highlight">
+      <a href="home-new.html" class="back-btn">
         <i class="fa-solid fa-arrow-left"></i>
-        <span class="uppercase tracking-wide">Home</span>
+        <span class="text-sm uppercase tracking-wide">Home</span>
       </a>
 
     </div>
   </nav>
 
+  <!-- Main Content -->
   <main>
     
+    <!-- Hero Section -->
     <section class="hero-section">
       <div class="max-w-6xl mx-auto text-center fade-in-up">
         <h1 class="hero-title">CORE MECHANICS</h1>
         <p class="hero-subtitle">
-          How it works : <br class="md:hidden"><br class="md:hidden">
+          How it works : <br><br>
           <span class="highlight-blue">Two Tokens</span> × 
           <span class="highlight-purple">Two Products</span>
         </p>
       </div>
     </section>
 
-    <section class="px-4 md:px-6 pb-16 md:pb-24 relative z-10">
+    <!-- Token Ecosystem Section -->
+    <section style="padding: 0 24px 80px; position: relative; z-index: 10;">
       <div class="max-w-6xl mx-auto">
         
-        <div class="section-header">
-          <h2 class="section-title">
-            <i class="fa-solid fa-coins" style="color: #fbbf24; margin-right: 8px;"></i>
-            TOKEN
-          </h2>
-          <p class="section-subtitle">Dual-token model powering our platform</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-20">
+        <!-- Row 1: ChMe + Promo Game -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; margin-bottom: 32px;">
           
+          <!-- ChMe Token -->
           <div class="content-card border-accent-blue">
             
             <div class="section-icon icon-blue">
@@ -544,7 +613,9 @@
                 Primary Purpose
               </h4>
               <p class="content-section-text">
-                ChMe is designed as the promotional engine of our products. It rewards users for spreading awareness and driving community growth. Think of it as "proof of promotion" - the more you contribute to our visibility, the more USDC you could get.
+                ChMe rewards users for spreading awareness and driving community growth.
+                Think of it as 'proof of promotion'
+                — as our visibility grows, the more USDC everyone can earn.
               </p>
             </div>
 
@@ -554,13 +625,15 @@
                 Exchange Model
               </h4>
               <p class="content-section-text">
-                The Game Theory of Promotion.<br><br>
-                Designed for viral expansion, ChMe introduces a revolutionary dual-exchange engine.<br>
-                Holders face a strategic choice: swap for the platform token $Ch to support the ecosystem, 
-                or wait for the $USDC pool.<br> As more users choose $Ch, the remaining 
-                $ChMe supply shrinks while the USDC exchange value per token 
-                mathematically climbs.<br> Promote, burn, and capture the snowball effect. 
-              </p>
+                ChMe introduces a revolutionary dual-exchange engine.<br><br>
+                Following your gains of $ChMe, our team will allocate and lock a portion of USDC into a
+                smart contract to build the reward pool.<br><br>
+                Holders will then face a strategic choice:
+                swap for the platform token $Ch , or wait for the locked $USDC pool.<br><br>
+                As more users choose to swap for $Ch, the total circulating supply of $ChMe shrinks, which
+                mathematically drives up the USDC exchange value per remaining token.<br><br>
+                When the USDC pool officially opens, the exchange rate will be determined strictly by math:
+                the total USDC in the pool divided by the remaining circulating supply of $ChMe
             </div>
 
             <div class="content-section">
@@ -577,6 +650,63 @@
 
           </div>
 
+          <!-- Promo Game -->
+          <div class="content-card border-accent-green">
+            
+            <div class="section-icon icon-green">
+              <i class="fa-solid fa-gamepad"></i>
+            </div>
+
+            <h3 class="card-title">Promo Game</h3>
+            
+            <div class="badge badge-green">
+              <i class="fa-solid fa-play-circle"></i>
+              Gamified Marketing Platform
+            </div>
+
+            <div class="content-section">
+              <h4 class="content-section-title">
+                <i class="fa-solid fa-star" style="color: #6ee7b7;"></i>
+                What It Is
+              </h4>
+              <p class="content-section-text">
+                Token Tycoon is a fun promotional game that mixes a 'Lucky Wheel' with ticket trading.
+                Players spin the wheel to earn game tokens, then use them in lotteries where ticket prices
+                go up and down. It brings the excitement of real-world trading into a fun, strategic game.
+              </p>
+            </div>
+
+            <div class="content-section">
+              <h4 class="content-section-title">
+                <i class="fa-solid fa-cogs" style="color: #6ee7b7;"></i>
+                How It Works
+              </h4>
+              <p class="content-section-text">
+                Earn game tokens through weekly spins, then take them to a high-stakes trading market or
+                simulated casino to win even more!<br><br>
+                Gather enough tokens to upgrade your rank and become a true Tycoon.<br><br>
+                (Note: Game tokens are strictly for in-game entertainment and have no other use.)
+              </p>
+            </div>
+
+            <div class="content-section">
+              <h4 class="content-section-title">
+                <i class="fa-solid fa-trophy" style="color: #6ee7b7;"></i>
+                Core Features
+              </h4>
+              <ul class="content-list">
+                <li><span class="list-bullet" style="color: #6ee7b7;">•</span> 100% free to play - no entry fees or paywalls</li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Row 2: Ch Token + DeFi Protocol -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; margin-bottom: 80px;">
+
+          <!-- Ch Token -->
           <div class="content-card border-accent-pink">
             
             <div class="section-icon icon-pink">
@@ -596,7 +726,8 @@
                 Core Function
               </h4>
               <p class="content-section-text">
-                Ch is the core of our DeFi protocol, used to join Cheaply (Our DeFi product) events and grant permission for users to issue their own tokens.
+                $Ch is the access pass for our DeFi protocol.
+                Users must hold a certain amount of $Ch to use our DeFi products.
               </p>
             </div>
 
@@ -624,69 +755,7 @@
 
           </div>
 
-        </div>
-
-        <div class="section-header mt-12 md:mt-20">
-          <h2 class="section-title">
-            <i class="fa-solid fa-cube" style="color: #c084fc; margin-right: 8px;"></i>
-            PRODUCT SUITE
-          </h2>
-          <p class="section-subtitle">Serious Finance in DeFi. Serious Fun in Gaming</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-          
-          <div class="content-card border-accent-green">
-            
-            <div class="section-icon icon-green">
-              <i class="fa-solid fa-gamepad"></i>
-            </div>
-
-            <h3 class="card-title">Promo Game</h3>
-            
-            <div class="badge badge-green">
-              <i class="fa-solid fa-play-circle"></i>
-              Gamified Marketing Platform
-            </div>
-
-            <div class="content-section">
-              <h4 class="content-section-title">
-                <i class="fa-solid fa-star" style="color: #6ee7b7;"></i>
-                What It Is
-              </h4>
-              <p class="content-section-text">
-                Token Tycoon is an interactive promotion platform that merges "Lucky Wheel" mechanics with "Fluctuating Ticket Trading". Players earn game tokens through intuitive wheel spins and engage in lottery competitions featuring market-driven volatility. By simulating the thrills of financial markets, it transforms platform engagement into a strategic gaming experience.
-              </p>
-            </div>
-
-            <div class="content-section">
-              <h4 class="content-section-title">
-                <i class="fa-solid fa-cogs" style="color: #6ee7b7;"></i>
-                How It Works
-              </h4>
-              <p class="content-section-text">
-                Spin to Win: Every account receives 5 free spins upon registration and one free weekly spin to win high-value game tokens on a fixed 8-slot wheel.<br><br>
-
-                Card Buffs: Unlock "Basic Achievement" or "Advanced Luck" cards by completing specific actions—such as consecutive logins or token purchases—to gain prize multipliers or extra spin opportunities.<br><br>
-
-                Lottery Arena (Futures Trading): Use accumulated tokens to purchase "Dynamic Price Tickets". All spent tokens enter a prize pool, where a single winner can claim the entire pot, or the pool carries over if no one wins.<br><br>
-
-                Token Conversion: Purchasing Web2 game tokens grants immediate bonuses of Web3 promotional tokens at a fixed ratio , capped at 5,000 promo tokens per user.<br><br>
-              </p>
-            </div>
-
-            <div class="content-section">
-              <h4 class="content-section-title">
-                <i class="fa-solid fa-trophy" style="color: #6ee7b7;"></i>
-                Core Features
-              </h4>
-              <ul class="content-list">
-                <li><span class="list-bullet" style="color: #6ee7b7;">•</span> 100% free to play - no entry fees or paywalls</li>
-              </ul>
-            </div>
-
-          </div>
-
+          <!-- DeFi Protocol -->
           <div class="content-card border-accent-purple">
             
             <div class="section-icon icon-purple">
@@ -703,32 +772,34 @@
             <div class="content-section">
               <h4 class="content-section-title">
                 <i class="fa-solid fa-star" style="color: #c4b5fd;"></i>
-                Vision
+                Product core
               </h4>
               <p class="content-section-text">
-                Details to be released once the DeFi product is live on the Testnet.
+                If Pump.fun is the launchpad for your personal Meme Coin,<br><br>
+                Cheaply is the foundry for your personal Stablecoin (Brand token).<br><br>
+                Eliminate fraud, curbing predatory dumping.<br><br>
+                Cheaply isn't just about launching a token;<br>
+                It's about building an asset designed for longevity and sustainable growth.<br><br>
               </p>
-            </div>
-
-            <div class="content-section">
               <h4 class="content-section-title">
-                <i class="fa-solid fa-hammer" style="color: #c4b5fd;"></i>
-                Development Status
+                <i class="fa-solid fa-star" style="color: #c4b5fd;"></i>
+                Product Story
               </h4>
               <p class="content-section-text">
-                Details to be released once the DeFi product is live on the Testnet.
-              </p>
-            </div>
+                Imagine you're scrolling on your phone and find a great video.
+                You want to see the whole thing, so you go on Cheaply and pay a little USDC to unlock the full video — just like OnlyFans.<br><br>
 
-            <div class="content-section">
-              <h4 class="content-section-title">
-                <i class="fa-solid fa-trophy" style="color: #c4b5fd;"></i>
-                Key Modules
-              </h4>
-              <ul class="content-list">
-                <li><span class="list-bullet" style="color: #c4b5fd;">•</span> Details to be released once the DeFi product is live on the Testnet.</li>
-                
-              </ul>
+                <strong style="color: var(--text-primary);">1.</strong> As soon as you pay, you get the video and get the creator's special token.
+                The money you paid is split: one part goes to the creator as profit, and the other part goes into a secure system "vault" as a backup fund.<br><br>
+
+                <strong style="color: var(--text-primary);">2.</strong> You are fully in control of these tokens. You can keep them, or you can give them back to the "vault" anytime to get USDC back.<br><br>
+
+                <strong style="color: var(--text-primary);">3.</strong> As the video goes viral, more fans get these tokens. Real-world shops like clothing stores notice this group of fans with tokens. To get their business, these shops let fans buy clothes and food with the tokens and premium perks.<br><br>
+
+                <strong style="color: var(--text-primary);">4.</strong> Why would a shop accept tokens? Because the system's "vault" backs them up. Shop owners can exchange the tokens for USDC. They don't worry about the token going to "Zero", and users get to spend their tokens on real-world stuff.<br><br>
+
+                <strong style="color: var(--text-primary);">5.</strong> As more shops join, they want to stand out. To advertise, some shops start adding their own USDC into the system's vault as a marketing expense. When the vault has more money, tokens become worth more USDC! This makes more people want the tokens, which brings in more shops, creating a winning cycle for everyone.
+              </p>
             </div>
 
           </div>
@@ -736,21 +807,8 @@
         </div>
 
         <div class="connection-card">
-          <h3 class="connection-title">
-            <i class="fa-solid fa-link" style="color: #818cf8; margin-right: 8px;"></i>
-            How Everything Connects
-          </h3>
-          <div class="connection-text">
-            <p>
-              <span class="text-highlight-green">Promo Game</span> uses 
-              <span class="text-highlight-blue">ChMe tokens</span> as rewards, creating a fun entry point for new users. As the community grows and the 
-              <span class="text-highlight-purple">DeFi Protocol</span> launches, 
-              <span class="text-highlight-pink">Ch tokens</span> become the utility backbone.
-            </p>
-            <div class="connection-example">
-              <i class="fa-solid fa-lightbulb" style="color: #fbbf24; margin-right: 6px;"></i>
-              <strong>Example Flow:</strong> Play game → Earn ChMe → Get Ch Token → Use in DeFi → Earn passive income → Reinvest or cash out.
-            </div>
+          <div class="connection-text" style="font-size: 1.1rem; font-weight: 500; color: var(--text-primary);">
+            Hold $Ch to use our DeFi protocol Cheaply,<br><br> promote through ChMe to share the USDC pool,<br><br> and play Token Tycoon for pure gaming fun!
           </div>
         </div>
 
@@ -759,17 +817,18 @@
 
   </main>
 
+  <!-- Footer -->
   <footer>
     <div class="max-w-7xl mx-auto text-center">
       <div class="footer-logo">
         <div class="footer-logo-icon">C</div>
         <span class="text-xl font-bold">Cheaply</span>
       </div>
-      <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 20px;">
+      <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 24px;">
         Understanding the core mechanics of our ecosystem
       </p>
-      <a href="/" class="footer-link no-tap-highlight" style="display: inline-block; margin-bottom: 24px;">
-        <i class="fa-solid fa-arrow-left" style="margin-right: 6px;"></i>
+      <a href="home-new.html" class="footer-link" style="display: inline-block; margin-bottom: 24px;">
+        <i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i>
         Back to Home
       </a>
       <div style="font-size: 0.75rem; color: #4a5568; font-weight: 500;">
